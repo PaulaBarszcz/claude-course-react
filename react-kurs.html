@@ -1,0 +1,2532 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React dla Angular Devów — Kurs Interaktywny</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f11;
+    --bg2: #16181c;
+    --bg3: #1e2128;
+    --surface: #252830;
+    --surface2: #2e3240;
+    --border: #333847;
+    --border2: #404558;
+    --text: #e8eaf0;
+    --text2: #9ba3b8;
+    --text3: #636b82;
+    --accent: #61dafb;
+    --accent2: #3b82f6;
+    --angular: #dd0031;
+    --angular-soft: #ff4e6a;
+    --react: #61dafb;
+    --react-soft: #8ae8ff;
+    --success: #4ade80;
+    --success-bg: #052e16;
+    --error: #f87171;
+    --error-bg: #2d1111;
+    --warning: #fbbf24;
+    --warning-bg: #2d1e00;
+    --code-bg: #1a1d24;
+    --code-border: #2e3240;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --serif: 'DM Serif Display', serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  /* LAYOUT */
+  .app { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .main { flex: 1; overflow-x: hidden; }
+
+  /* SIDEBAR */
+  .sidebar-header {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .logo-text { font-size: 15px; font-weight: 600; color: var(--text); }
+  .logo-sub { font-size: 11px; color: var(--text3); letter-spacing: 0.05em; text-transform: uppercase; }
+
+  .progress-bar-wrap { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .progress-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); border-radius: 99px; transition: width 0.5s ease; }
+
+  .nav-section { padding: 12px 12px 4px; }
+  .nav-section-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 8px; margin-bottom: 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 13.5px;
+    color: var(--text2);
+    position: relative;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: rgba(97,218,251,0.08); color: var(--accent); }
+  .nav-item.active::before {
+    content: '';
+    position: absolute; left: 0; top: 20%; bottom: 20%;
+    width: 2px; background: var(--accent);
+    border-radius: 0 2px 2px 0;
+  }
+  .nav-item.completed { color: var(--text3); }
+  .nav-item.completed::after {
+    content: '✓';
+    margin-left: auto;
+    color: var(--success);
+    font-size: 12px;
+  }
+  .nav-num {
+    width: 22px; height: 22px; min-width: 22px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text3);
+    font-family: var(--mono);
+  }
+  .nav-item.active .nav-num { background: rgba(97,218,251,0.15); border-color: var(--accent); color: var(--accent); }
+  .nav-item.completed .nav-num { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+
+  /* CONTENT */
+  .content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 48px 120px;
+  }
+
+  /* MODULE HEADER */
+  .module-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .module-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(97,218,251,0.08);
+    border: 1px solid rgba(97,218,251,0.2);
+    border-radius: 99px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+  .module-title {
+    font-family: var(--serif);
+    font-size: 42px;
+    color: var(--text);
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .module-title em { color: var(--accent); font-style: italic; }
+  .module-desc { font-size: 16px; color: var(--text2); max-width: 600px; }
+
+  /* SECTION */
+  .section { margin-bottom: 48px; }
+  .section-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::before {
+    content: '';
+    display: block; width: 4px; height: 24px;
+    background: var(--accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  p { color: var(--text2); margin-bottom: 16px; font-size: 15px; }
+  strong { color: var(--text); font-weight: 600; }
+  em { color: var(--accent); font-style: normal; font-weight: 500; }
+
+  /* COMPARISON TABLE */
+  .compare-table {
+    width: 100%;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin: 24px 0;
+  }
+  .compare-table thead tr {
+    background: var(--bg3);
+  }
+  .compare-table th {
+    padding: 12px 16px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    text-align: left;
+  }
+  .compare-table th.angular-col { color: var(--angular-soft); }
+  .compare-table th.react-col { color: var(--react); }
+  .compare-table th.concept-col { color: var(--text3); }
+  .compare-table td {
+    padding: 12px 16px;
+    font-size: 13.5px;
+    border-top: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .compare-table .concept { color: var(--text2); font-weight: 500; }
+  .compare-table .angular { color: var(--angular-soft); font-family: var(--mono); font-size: 12px; }
+  .compare-table .react-c { color: var(--react-soft); font-family: var(--mono); font-size: 12px; }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: var(--radius);
+    margin: 20px 0;
+    overflow: hidden;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--code-border);
+  }
+  .code-lang {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: var(--text3);
+  }
+  .code-label {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px;
+  }
+  .code-label .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+  .dot-angular { background: var(--angular); }
+  .dot-react { background: var(--react); }
+  .dot-neutral { background: var(--text3); }
+  pre {
+    padding: 20px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  code { font-family: var(--mono); }
+  .kw { color: #c678dd; }
+  .fn { color: #61afef; }
+  .str { color: #98c379; }
+  .cm { color: #5c6370; font-style: italic; }
+  .tag { color: #e06c75; }
+  .attr { color: #d19a66; }
+  .num { color: #e5c07b; }
+  .jsx { color: #abb2bf; }
+  .hl { background: rgba(97,218,251,0.07); display: block; margin: 0 -20px; padding: 0 20px; }
+
+  /* SIDE BY SIDE CODE */
+  .code-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  @media (max-width: 700px) { .code-split { grid-template-columns: 1fr; } }
+
+  /* CALLOUT */
+  .callout {
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 20px 0;
+    display: flex; gap: 12px;
+  }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+  .callout-body { font-size: 14px; color: var(--text2); }
+  .callout-body strong { color: var(--text); }
+  .callout.info { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); }
+  .callout.warning { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); }
+  .callout.success { background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); }
+  .callout.angular { background: rgba(221,0,49,0.08); border: 1px solid rgba(221,0,49,0.2); }
+
+  /* QUIZ */
+  .quiz-container {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin: 32px 0;
+  }
+  .quiz-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--accent); font-weight: 600; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .quiz-label::before {
+    content: '';
+    display: block; width: 18px; height: 2px;
+    background: var(--accent);
+  }
+  .quiz-question { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 20px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-option {
+    padding: 13px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 14px;
+    color: var(--text2);
+    background: var(--bg3);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .quiz-option:hover:not([disabled]) { border-color: var(--border2); background: var(--surface); color: var(--text); }
+  .quiz-option.correct { border-color: var(--success); background: var(--success-bg); color: var(--success); }
+  .quiz-option.incorrect { border-color: var(--error); background: var(--error-bg); color: var(--error); }
+  .quiz-option[disabled] { cursor: default; }
+  .option-letter {
+    width: 24px; height: 24px; min-width: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    font-family: var(--mono);
+    color: var(--text3);
+  }
+  .quiz-option.correct .option-letter { border-color: var(--success); color: var(--success); background: var(--success-bg); }
+  .quiz-option.incorrect .option-letter { border-color: var(--error); color: var(--error); background: var(--error-bg); }
+  .quiz-feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: var(--success-bg); border: 1px solid var(--success); color: var(--success); }
+  .quiz-feedback.incorrect { background: var(--error-bg); border: 1px solid var(--error); color: #fca5a5; }
+  .quiz-multi-note { font-size: 12px; color: var(--text3); margin-bottom: 12px; }
+  .quiz-submit {
+    margin-top: 16px;
+    padding: 10px 20px;
+    background: var(--accent2);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: none;
+    font-family: var(--sans);
+    transition: opacity 0.15s;
+  }
+  .quiz-submit:hover { opacity: 0.85; }
+
+  /* CHALLENGE */
+  .challenge {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warning);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin: 32px 0;
+  }
+  .challenge-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--warning); font-weight: 600; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .challenge-title { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 12px; }
+  .challenge-desc { font-size: 14px; color: var(--text2); margin-bottom: 16px; }
+  .challenge-hints { margin-top: 12px; }
+  .hint-toggle {
+    background: none; border: 1px solid var(--border);
+    color: var(--text3); padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer; font-size: 12px;
+    font-family: var(--sans);
+    transition: all 0.15s;
+  }
+  .hint-toggle:hover { border-color: var(--border2); color: var(--text2); }
+  .hints-content { margin-top: 12px; display: none; }
+  .hints-content.show { display: block; }
+  .hint { font-size: 13px; color: var(--text3); padding: 6px 0; display: flex; gap: 8px; align-items: flex-start; }
+  .hint::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+
+  /* NAV BUTTONS */
+  .nav-buttons {
+    display: flex; justify-content: space-between; gap: 12px;
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+  .nav-btn {
+    padding: 12px 24px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--sans);
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 8px;
+    text-decoration: none;
+  }
+  .nav-btn.prev {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+  }
+  .nav-btn.prev:hover { border-color: var(--border2); color: var(--text); }
+  .nav-btn.next {
+    background: var(--accent2);
+    border: none;
+    color: white;
+    margin-left: auto;
+  }
+  .nav-btn.next:hover { background: #2563eb; }
+
+  /* MODULE GRID (home) */
+  .module-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin: 32px 0; }
+  .module-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .module-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+  .module-card.active-card { border-color: var(--accent2); background: rgba(59,130,246,0.05); }
+  .card-num { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-bottom: 8px; }
+  .card-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .card-desc { font-size: 13px; color: var(--text3); }
+  .card-status { margin-top: 12px; font-size: 11px; }
+  .status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; }
+  .status-dot.done { background: var(--success); }
+  .status-dot.current { background: var(--accent); }
+  .status-dot.todo { background: var(--text3); }
+
+  /* BADGE */
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin: 2px;
+  }
+  .badge-react { background: rgba(97,218,251,0.1); color: var(--react); border: 1px solid rgba(97,218,251,0.25); }
+  .badge-angular { background: rgba(221,0,49,0.1); color: var(--angular-soft); border: 1px solid rgba(221,0,49,0.25); }
+  .badge-new { background: rgba(74,222,128,0.1); color: var(--success); border: 1px solid rgba(74,222,128,0.25); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* HIDDEN */
+  .module-page { display: none; }
+  .module-page.active { display: block; }
+
+  /* INTRO HERO */
+  .hero {
+    text-align: center;
+    padding: 64px 0 48px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(97,218,251,0.06);
+    border: 1px solid rgba(97,218,251,0.15);
+    border-radius: 99px; padding: 5px 14px;
+    font-size: 12px; color: var(--accent); margin-bottom: 24px;
+    letter-spacing: 0.04em;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: 52px; color: var(--text);
+    line-height: 1.1; margin-bottom: 16px;
+  }
+  .hero h1 em { color: var(--react); font-style: italic; }
+  .hero p { font-size: 17px; color: var(--text2); max-width: 520px; margin: 0 auto 32px; }
+  .hero-stats { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 28px; font-weight: 600; color: var(--text); font-family: var(--mono); }
+  .stat-label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .start-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 32px;
+    background: var(--accent2);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 15px; font-weight: 500;
+    font-family: var(--sans);
+    transition: background 0.15s;
+    margin-bottom: 48px;
+  }
+  .start-btn:hover { background: #2563eb; }
+
+  /* INLINE CODE */
+  .ic {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--react-soft);
+  }
+
+  /* CONCEPT BOX */
+  .concept-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .concept-box h4 { color: var(--text); font-size: 15px; margin-bottom: 10px; font-weight: 600; }
+  .concept-box p { font-size: 13.5px; margin-bottom: 8px; }
+  .concept-box p:last-child { margin-bottom: 0; }
+
+  ul.styled { list-style: none; padding: 0; margin: 12px 0; }
+  ul.styled li { padding: 5px 0; font-size: 14px; color: var(--text2); display: flex; gap: 8px; }
+  ul.styled li::before { content: '›'; color: var(--accent); flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">⚛</div>
+        <div>
+          <div class="logo-text">React dla Angular Dev</div>
+          <div class="logo-sub">Kurs interaktywny</div>
+        </div>
+      </div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-label">
+        <span>Postęp</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Start</div>
+      <div class="nav-item active" data-page="home" onclick="showPage('home')">
+        <div class="nav-num">0</div>
+        Wprowadzenie
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Moduły</div>
+      <div class="nav-item" data-page="m1" onclick="showPage('m1')">
+        <div class="nav-num">1</div>
+        Mental model: Angular → React
+      </div>
+      <div class="nav-item" data-page="m2" onclick="showPage('m2')">
+        <div class="nav-num">2</div>
+        Komponenty i JSX
+      </div>
+      <div class="nav-item" data-page="m3" onclick="showPage('m3')">
+        <div class="nav-num">3</div>
+        useState & useEffect
+      </div>
+      <div class="nav-item" data-page="m4" onclick="showPage('m4')">
+        <div class="nav-num">4</div>
+        Hooki — pełny arsenał
+      </div>
+      <div class="nav-item" data-page="m5" onclick="showPage('m5')">
+        <div class="nav-num">5</div>
+        Formularze & Walidacja
+      </div>
+      <div class="nav-item" data-page="m6" onclick="showPage('m6')">
+        <div class="nav-num">6</div>
+        Routing — React Router v6
+      </div>
+      <div class="nav-item" data-page="m7" onclick="showPage('m7')">
+        <div class="nav-num">7</div>
+        State globalny — Zustand
+      </div>
+      <div class="nav-item" data-page="m8" onclick="showPage('m8')">
+        <div class="nav-num">8</div>
+        Data fetching — TanStack Query
+      </div>
+      <div class="nav-item" data-page="m9" onclick="showPage('m9')">
+        <div class="nav-num">9</div>
+        Wzorce i architektura
+      </div>
+      <div class="nav-item" data-page="m10" onclick="showPage('m10')">
+        <div class="nav-num">10</div>
+        Testy — React Testing Library
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- HOME -->
+    <div id="page-home" class="module-page active">
+      <div class="content">
+        <div class="hero">
+          <div class="hero-tag">⚛ Angular 20 → React 19</div>
+          <h1>Witaj z powrotem<br>w <em>Reakcie</em></h1>
+          <p>Kurs stworzony dla kogoś, kto świetnie zna Angular — i chce przełożyć tę wiedzę na React bez cofania się do basics.</p>
+          <button class="start-btn" onclick="showPage('m1')">
+            Zacznij od Modułu 1 →
+          </button>
+          <div class="hero-stats">
+            <div class="stat"><div class="stat-num">10</div><div class="stat-label">Modułów</div></div>
+            <div class="stat"><div class="stat-num">30+</div><div class="stat-label">Przykładów kodu</div></div>
+            <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Quizów i zadań</div></div>
+          </div>
+        </div>
+
+        <div class="section-title">Co znajdziesz w kursie</div>
+        <div class="module-grid">
+          <div class="module-card" onclick="showPage('m1')">
+            <div class="card-num">Moduł 01</div>
+            <div class="card-title">Mental model</div>
+            <div class="card-desc">Mapowanie Angular→React: co gdzie odpowiada, co zniknęło, co jest nowe</div>
+          </div>
+          <div class="module-card" onclick="showPage('m2')">
+            <div class="card-num">Moduł 02</div>
+            <div class="card-title">Komponenty i JSX</div>
+            <div class="card-desc">Funkcyjne komponenty, props, children, renderowanie warunkowe</div>
+          </div>
+          <div class="module-card" onclick="showPage('m3')">
+            <div class="card-num">Moduł 03</div>
+            <div class="card-title">useState & useEffect</div>
+            <div class="card-desc">Serce Reacta. Lifecycle, closure traps, dependency array</div>
+          </div>
+          <div class="module-card" onclick="showPage('m4')">
+            <div class="card-num">Moduł 04</div>
+            <div class="card-title">Pełny arsenał hooków</div>
+            <div class="card-desc">useRef, useMemo, useCallback, useContext, custom hooks</div>
+          </div>
+          <div class="module-card" onclick="showPage('m5')">
+            <div class="card-num">Moduł 05</div>
+            <div class="card-title">Formularze & Walidacja</div>
+            <div class="card-desc">React Hook Form — nieporównywalnie lepsze niż Reactive Forms</div>
+          </div>
+          <div class="module-card" onclick="showPage('m6')">
+            <div class="card-num">Moduł 06</div>
+            <div class="card-title">Routing</div>
+            <div class="card-desc">React Router v6+, nested routes, guards, lazy loading</div>
+          </div>
+          <div class="module-card" onclick="showPage('m7')">
+            <div class="card-num">Moduł 07</div>
+            <div class="card-title">Zustand</div>
+            <div class="card-desc">Global state bez bólu. Koniec z Redux boilerplate</div>
+          </div>
+          <div class="module-card" onclick="showPage('m8')">
+            <div class="card-num">Moduł 08</div>
+            <div class="card-title">TanStack Query</div>
+            <div class="card-desc">Fetching, cache, mutations, optimistic updates</div>
+          </div>
+          <div class="module-card" onclick="showPage('m9')">
+            <div class="card-num">Moduł 09</div>
+            <div class="card-title">Wzorce i architektura</div>
+            <div class="card-desc">Compound components, render props, composability</div>
+          </div>
+          <div class="module-card" onclick="showPage('m10')">
+            <div class="card-num">Moduł 10</div>
+            <div class="card-title">Testy</div>
+            <div class="card-desc">React Testing Library, Vitest, co testować a czego nie</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULE 1 -->
+    <div id="page-m1" class="module-page">
+      <div class="content">
+        <div class="module-header">
+          <div class="module-tag">Moduł 01</div>
+          <div class="module-title">Mental model:<br><em>Angular → React</em></div>
+          <div class="module-desc">Zanim napiszesz pierwszą linię Reacta — zrozum, co odpowiada czemu. To przyspieszy naukę 3×.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Fundamentalna różnica filozoficzna</div>
+          <p>Angular to <strong>framework</strong> — dostarcza gotowe rozwiązania na wszystko: DI, routing, formularze, HTTP, change detection. React to <strong>biblioteka UI</strong> — obsługuje tylko renderowanie. Resztę dobierasz sam.</p>
+          <p>To nie jest minus Reacta — to feature. Ekosystem się rozwinął i dla każdego problemu jest jedno dobre rozwiązanie, które robi robotę świetnie.</p>
+
+          <div class="callout info">
+            <div class="callout-icon">💡</div>
+            <div class="callout-body"><strong>Kluczowy mental shift:</strong> W Angularze pytasz "jak to zrobić w Angularze?". W Reakcie pytasz "jak to zrobić w JavaScript?" — React jest transparentny, JS jest na wierzchu.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Tabela przekładów Angular → React</div>
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th class="concept-col">Concept</th>
+                <th class="angular-col">Angular 20</th>
+                <th class="react-col">React 19</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="concept">Komponent</td><td class="angular">@Component class</td><td class="react-c">function + JSX</td></tr>
+              <tr><td class="concept">Template syntax</td><td class="angular">@if, @for, @switch</td><td class="react-c">JS w JSX: &&, .map()</td></tr>
+              <tr><td class="concept">Lifecycle OnInit</td><td class="angular">ngOnInit()</td><td class="react-c">useEffect(fn, [])</td></tr>
+              <tr><td class="concept">Lifecycle OnDestroy</td><td class="angular">ngOnDestroy()</td><td class="react-c">useEffect return fn</td></tr>
+              <tr><td class="concept">Two-way binding</td><td class="angular">[(ngModel)]</td><td class="react-c">value + onChange</td></tr>
+              <tr><td class="concept">Input property</td><td class="angular">@Input() prop</td><td class="react-c">props.prop</td></tr>
+              <tr><td class="concept">Output event</td><td class="angular">@Output() EventEmitter</td><td class="react-c">props.onXxx callback</td></tr>
+              <tr><td class="concept">Service (singleton)</td><td class="angular">@Injectable class</td><td class="react-c">custom hook / Zustand</td></tr>
+              <tr><td class="concept">Dependency Injection</td><td class="angular">inject() / constructor</td><td class="react-c">import + call</td></tr>
+              <tr><td class="concept">Pipe (transform)</td><td class="angular">@Pipe, | pipe</td><td class="react-c">zwykła funkcja JS</td></tr>
+              <tr><td class="concept">Reactive Forms</td><td class="angular">FormGroup, FormControl</td><td class="react-c">React Hook Form</td></tr>
+              <tr><td class="concept">HttpClient + RxJS</td><td class="angular">Observable pipe chain</td><td class="react-c">TanStack Query + fetch</td></tr>
+              <tr><td class="concept">Router</td><td class="angular">RouterModule, routes[]</td><td class="react-c">React Router v6</td></tr>
+              <tr><td class="concept">Guard</td><td class="angular">CanActivateFn</td><td class="react-c">loader / wrapper component</td></tr>
+              <tr><td class="concept">NgModule</td><td class="angular">@NgModule</td><td class="react-c">nie istnieje (zwykły import)</td></tr>
+              <tr><td class="concept">Change detection</td><td class="angular">Zone.js / signals</td><td class="react-c">useState trigger re-render</td></tr>
+              <tr><td class="concept">Standalone components</td><td class="angular">standalone: true</td><td class="react-c">każdy komponent jest standalone</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Co zniknęło (i dlaczego to dobrze)</div>
+
+          <div class="callout angular">
+            <div class="callout-icon">🗑</div>
+            <div class="callout-body">
+              <strong>NgModule</strong> — W Reacte nie ma modułów. Każdy komponent to plik, który importujesz jak każdy inny moduł JS. Koniec z boilerplate <code>declarations</code>, <code>imports</code>, <code>exports</code>.
+            </div>
+          </div>
+          <div class="callout angular">
+            <div class="callout-icon">🗑</div>
+            <div class="callout-body">
+              <strong>Zone.js i change detection</strong> — React nie ślędzi magicznie co się zmieniło. Ty wywołujesz <span class="ic">setState</span> → React wie że coś się zmieniło → re-render. Prostsze, przewidywalne.
+            </div>
+          </div>
+          <div class="callout angular">
+            <div class="callout-icon">🗑</div>
+            <div class="callout-body">
+              <strong>RxJS jako domyślny tool</strong> — W Reacte nie ma Observables wszędzie. Async to <span class="ic">async/await</span>. RxJS możesz użyć jeśli chcesz, ale nie musisz.
+            </div>
+          </div>
+          <div class="callout angular">
+            <div class="callout-icon">🗑</div>
+            <div class="callout-body">
+              <strong>Klasy komponentów</strong> — Żadnych <span class="ic">class MyComponent implements OnInit</span>. Wszystko to funkcje. React 16.8+ (2019) przestawił się na hooki — klasy wciąż działają, ale nikt ich nie pisze.
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Co jest naprawdę nowe (od 2018)</div>
+          <p>W 2018 React był jeszcze klasowy. Oto co się zmieniło:</p>
+          <ul class="styled">
+            <li><strong>Hooks (React 16.8, 2019)</strong> — useState, useEffect i cała rodzina. To jest teraz React.</li>
+            <li><strong>Concurrent Mode / Fiber (React 18, 2022)</strong> — renderowanie nie blokuje UI, Suspense, transitions.</li>
+            <li><strong>useTransition, useDeferredValue (React 18)</strong> — kontrola priorytetu renderowania.</li>
+            <li><strong>Server Components (React 19, 2024)</strong> — komponenty renderowane na serwerze, bez JS na kliencie.</li>
+            <li><strong>use() hook (React 19)</strong> — await w komponencie, nowy sposób na dane asynchroniczne.</li>
+            <li><strong>Actions / useActionState (React 19)</strong> — nowy model formularzy i mutacji.</li>
+          </ul>
+          <div class="callout success">
+            <div class="callout-icon">✓</div>
+            <div class="callout-body"><strong>Na rozmowie</strong> wystarczy znać hooki dobrze, wiedzieć że React 18 wprowadził Concurrent Mode, i wiedzieć że React 19 to Server Components. Reszty nikt nie pyta na poziomie senior bez wcześniejszego ostrzeżenia.</div>
+          </div>
+        </div>
+
+        <!-- QUIZ 1 -->
+        <div class="quiz-container" id="quiz-1-1">
+          <div class="quiz-label">Quiz 1.1</div>
+          <div class="quiz-question">Czym w React odpowiada serwis z Angular (singleton z logiką)?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('1-1', this, false)">
+              <div class="option-letter">A</div>
+              Redux store — zawsze używaj Reduxa do serwisów
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('1-1', this, false)">
+              <div class="option-letter">B</div>
+              @Injectable klasa — React ma to samo
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('1-1', this, true)">
+              <div class="option-letter">C</div>
+              Custom hook lub Zustand store — logikę wyciągasz do reużywalnej funkcji lub store'a
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('1-1', this, false)">
+              <div class="option-letter">D</div>
+              Context API — jedyny sposób na współdzielenie logiki
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-1-1"></div>
+        </div>
+
+        <div class="quiz-container" id="quiz-1-2">
+          <div class="quiz-label">Quiz 1.2</div>
+          <div class="quiz-question">Hooki w React pojawiły się w wersji:</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('1-2', this, false)">
+              <div class="option-letter">A</div>
+              React 15 (2016)
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('1-2', this, true)">
+              <div class="option-letter">B</div>
+              React 16.8 (luty 2019)
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('1-2', this, false)">
+              <div class="option-letter">C</div>
+              React 17 (2020)
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('1-2', this, false)">
+              <div class="option-letter">D</div>
+              React 18 (2022)
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-1-2"></div>
+        </div>
+
+        <div class="nav-buttons">
+          <button class="nav-btn prev" onclick="showPage('home')">← Spis treści</button>
+          <button class="nav-btn next" onclick="showPage('m2')">Moduł 2: Komponenty →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULE 2 -->
+    <div id="page-m2" class="module-page">
+      <div class="content">
+        <div class="module-header">
+          <div class="module-tag">Moduł 02</div>
+          <div class="module-title">Komponenty<br>i <em>JSX</em></div>
+          <div class="module-desc">Funkcyjne komponenty, JSX, props, children, renderowanie warunkowe i listy.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Komponent to funkcja, która zwraca JSX</div>
+          <p>Tyle. To naprawdę tyle. Żadnych dekoratorów, żadnych klas, żadnego metadata.</p>
+
+          <div class="code-split">
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-lang">TypeScript</div>
+                <div class="code-label"><span class="dot dot-angular"></span>Angular</div>
+              </div>
+              <pre><code><span class="kw">@Component</span>({
+  selector: <span class="str">'app-hello'</span>,
+  template: <span class="str">`
+    &lt;h1&gt;Cześć, {{ name }}!&lt;/h1&gt;
+    &lt;p&gt;Wiek: {{ age }}&lt;/p&gt;
+  `</span>
+})
+<span class="kw">export class</span> <span class="fn">HelloComponent</span> {
+  <span class="kw">@Input</span>() name!: <span class="kw">string</span>;
+  <span class="kw">@Input</span>() age!: <span class="kw">number</span>;
+}</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-lang">TypeScript + JSX</div>
+                <div class="code-label"><span class="dot dot-react"></span>React</div>
+              </div>
+              <pre><code><span class="kw">interface</span> <span class="fn">HelloProps</span> {
+  name: <span class="kw">string</span>;
+  age: <span class="kw">number</span>;
+}
+
+<span class="kw">export function</span> <span class="fn">Hello</span>({ name, age }: <span class="fn">HelloProps</span>) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>Cześć, {name}!<span class="tag">&lt;/h1&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Wiek: {age}<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="callout info">
+            <div class="callout-icon">💡</div>
+            <div class="callout-body"><strong>JSX to nie HTML.</strong> To JavaScript z syntaktycznym cukrem. <span class="ic">&lt;h1&gt;</span> kompiluje się do <span class="ic">React.createElement('h1', null, ...)</span>. Dlatego: <span class="ic">className</span> zamiast <span class="ic">class</span>, <span class="ic">htmlFor</span> zamiast <span class="ic">for</span>, wszystkie atrybuty camelCase.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Renderowanie warunkowe</div>
+          <p>Nie ma <span class="ic">*ngIf</span>. Jest JavaScript:</p>
+
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">JSX</div>
+              <div class="code-label"><span class="dot dot-react"></span>React</div>
+            </div>
+            <pre><code><span class="kw">function</span> <span class="fn">UserCard</span>({ user, isLoading }: Props) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cm">{/* && — jak *ngIf */}</span>
+      {isLoading <span class="kw">&amp;&amp;</span> <span class="tag">&lt;Spinner /&gt;</span>}
+
+      <span class="cm">{/* ternary — jak *ngIf / else */}</span>
+      {user ? (
+        <span class="tag">&lt;p&gt;</span>Witaj, {user.name}<span class="tag">&lt;/p&gt;</span>
+      ) : (
+        <span class="tag">&lt;p&gt;</span>Zaloguj się<span class="tag">&lt;/p&gt;</span>
+      )}
+
+      <span class="cm">{/* switch — wyciągasz do zmiennej */}</span>
+      {<span class="fn">renderStatus</span>(user.status)}
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</code></pre>
+          </div>
+
+          <div class="callout warning">
+            <div class="callout-icon">⚠️</div>
+            <div class="callout-body"><strong>Pułapka:</strong> <span class="ic">0 && &lt;Component /&gt;</span> renderuje <span class="ic">0</span> na ekranie! Zawsze używaj wyrażeń booleanowych: <span class="ic">count > 0 && &lt;Component /&gt;</span> lub <span class="ic">!!count && &lt;Component /&gt;</span>.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Listy — zamiennik *ngFor</div>
+          <div class="code-split">
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-lang">HTML Template</div>
+                <div class="code-label"><span class="dot dot-angular"></span>Angular</div>
+              </div>
+              <pre><code><span class="tag">&lt;ul&gt;</span>
+  <span class="tag">@for</span> (item <span class="kw">of</span> items;
+         track item.id) {
+    <span class="tag">&lt;li&gt;</span>{{ item.name }}<span class="tag">&lt;/li&gt;</span>
+  }
+<span class="tag">&lt;/ul&gt;</span></code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-lang">JSX</div>
+                <div class="code-label"><span class="dot dot-react"></span>React</div>
+              </div>
+              <pre><code><span class="tag">&lt;ul&gt;</span>
+  {items.<span class="fn">map</span>(item => (
+    <span class="tag">&lt;li</span> <span class="attr">key</span>={item.id}<span class="tag">&gt;</span>
+      {item.name}
+    <span class="tag">&lt;/li&gt;</span>
+  ))}
+<span class="tag">&lt;/ul&gt;</span></code></pre>
+            </div>
+          </div>
+          <div class="callout info">
+            <div class="callout-icon">🔑</div>
+            <div class="callout-body"><strong>key</strong> jest wymagany przy listach — jak <span class="ic">track</span> w Angularze. Musi być unikalny w obrębie listy. Nigdy nie używaj indeksu tablicy jako key (chyba że lista jest statyczna i nie zmienia kolejności).</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Children — projekcja treści</div>
+          <div class="code-split">
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-lang">Angular</div>
+                <div class="code-label"><span class="dot dot-angular"></span>ng-content</div>
+              </div>
+              <pre><code><span class="cm">// komponent</span>
+<span class="tag">&lt;ng-content /&gt;</span>
+
+<span class="cm">// użycie</span>
+<span class="tag">&lt;app-card&gt;</span>
+  <span class="tag">&lt;p&gt;</span>Treść<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/app-card&gt;</span></code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-lang">React</div>
+                <div class="code-label"><span class="dot dot-react"></span>children prop</div>
+              </div>
+              <pre><code><span class="cm">// komponent</span>
+<span class="kw">function</span> <span class="fn">Card</span>({ children }) {
+  <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>{children}<span class="tag">&lt;/div&gt;</span>;
+}
+
+<span class="cm">// użycie</span>
+<span class="tag">&lt;Card&gt;</span>
+  <span class="tag">&lt;p&gt;</span>Treść<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/Card&gt;</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUIZ 2 -->
+        <div class="quiz-container">
+          <div class="quiz-label">Quiz 2.1</div>
+          <div class="quiz-question">Masz tablicę produktów. Co jest błędem w tym kodzie?<br><br><code style="font-family:monospace;font-size:13px;color:#98c379">{products.map(p => &lt;li&gt;{p.name}&lt;/li&gt;)}</code></div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('2-1', this, false)">
+              <div class="option-letter">A</div>
+              Powinno być forEach zamiast map
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('2-1', this, true)">
+              <div class="option-letter">B</div>
+              Brak atrybutu key na elemencie li
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('2-1', this, false)">
+              <div class="option-letter">C</div>
+              Produkty powinny być w useState
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('2-1', this, false)">
+              <div class="option-letter">D</div>
+              Nie można używać map w JSX
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-2-1"></div>
+        </div>
+
+        <div class="quiz-container">
+          <div class="quiz-label">Quiz 2.2</div>
+          <div class="quiz-question">Co wyrenderuje: <code style="font-family:monospace;font-size:13px;color:#98c379">{0 && &lt;Alert /&gt;}</code>?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('2-2', this, false)">
+              <div class="option-letter">A</div>
+              Nic — warunek jest false, React pomija
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('2-2', this, true)">
+              <div class="option-letter">B</div>
+              Renderuje "0" — liczba 0 jest falsy, ale React ją wyświetla!
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('2-2', this, false)">
+              <div class="option-letter">C</div>
+              Renderuje komponent Alert
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('2-2', this, false)">
+              <div class="option-letter">D</div>
+              Rzuca TypeError
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-2-2"></div>
+        </div>
+
+        <!-- CHALLENGE -->
+        <div class="challenge">
+          <div class="challenge-label">🎯 Zadanie praktyczne</div>
+          <div class="challenge-title">Komponent UserList</div>
+          <div class="challenge-desc">Napisz komponent <code style="font-family:monospace">UserList</code>, który przyjmuje props: <code style="font-family:monospace">users: User[]</code> i <code style="font-family:monospace">isLoading: boolean</code>. Gdy ładuje — pokaż tekst "Ładowanie...". Gdy pusta lista — "Brak użytkowników". W przeciwnym razie — lista imion z avatarami (pierwsze litery imienia w kółku).</div>
+          <div class="challenge-hints">
+            <button class="hint-toggle" onclick="toggleHints(this)">Pokaż podpowiedzi</button>
+            <div class="hints-content">
+              <div class="hint">Użyj warunkowego renderowania z ternary lub &&</div>
+              <div class="hint">Pamiętaj o key={user.id} na każdym elemencie listy</div>
+              <div class="hint">Avatar: <code style="font-family:monospace">{user.name.charAt(0).toUpperCase()}</code></div>
+              <div class="hint">Trzy stany: loading / empty / filled — obsłuż wszystkie</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-buttons">
+          <button class="nav-btn prev" onclick="showPage('m1')">← Moduł 1</button>
+          <button class="nav-btn next" onclick="showPage('m3')">Moduł 3: useState & useEffect →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULE 3 -->
+    <div id="page-m3" class="module-page">
+      <div class="content">
+        <div class="module-header">
+          <div class="module-tag">Moduł 03</div>
+          <div class="module-title"><em>useState</em><br>& useEffect</div>
+          <div class="module-desc">Dwa najważniejsze hooki. Serce Reacta. Tu jest 80% tego co musisz wiedzieć.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">useState — lokalny stan komponentu</div>
+          <p>Zamiast <span class="ic">this.property = value</span> masz <span class="ic">setState</span>. Zmiana stanu → React re-renderuje komponent.</p>
+
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript + JSX</div>
+              <div class="code-label"><span class="dot dot-react"></span>React</div>
+            </div>
+            <pre><code><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="cm">// [wartość, setter] — destrukturyzacja tablicy</span>
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>);
+  <span class="kw">const</span> [name, setName] = <span class="fn">useState</span>(<span class="str">''</span>);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Licznik: {count}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setCount</span>(count + <span class="num">1</span>)}<span class="tag">&gt;</span>+<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">setCount</span>(c => c - <span class="num">1</span>)}<span class="tag">&gt;</span>-<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</code></pre>
+          </div>
+
+          <div class="concept-box">
+            <h4>Functional update — kiedy używać</h4>
+            <p><span class="ic">setCount(count + 1)</span> — bezpośrednia wartość. OK gdy nie zależy na poprzednim stanie.</p>
+            <p><span class="ic">setCount(c => c + 1)</span> — funkcja z poprzednim stanem. <strong>Zawsze używaj tego w callbackach asynchronicznych</strong>, bo <span class="ic">count</span> może być "stary" (closure problem).</p>
+          </div>
+
+          <div class="callout warning">
+            <div class="callout-icon">⚠️</div>
+            <div class="callout-body">
+              <strong>Stan jest immutable!</strong> Nigdy nie mutuj bezpośrednio:<br>
+              <code style="font-family:monospace;color:#f87171">❌ user.name = 'Anna' // React nie zobaczy zmiany!</code><br>
+              <code style="font-family:monospace;color:#4ade80">✓ setUser({...user, name: 'Anna'})</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">useEffect — efekty uboczne i lifecycle</div>
+          <p>Jeden hook zastępuje <span class="ic">ngOnInit</span>, <span class="ic">ngOnChanges</span>, <span class="ic">ngOnDestroy</span> i <span class="ic">ngAfterViewInit</span>.</p>
+
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>React</div>
+            </div>
+            <pre><code><span class="kw">import</span> { useEffect, useState } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">function</span> <span class="fn">UserProfile</span>({ userId }: { userId: <span class="kw">string</span> }) {
+  <span class="kw">const</span> [user, setUser] = <span class="fn">useState</span>(<span class="kw">null</span>);
+
+  <span class="cm">// 1. [] — działa raz, jak ngOnInit</span>
+<span class="hl">  <span class="fn">useEffect</span>(() => {
+    console.<span class="fn">log</span>(<span class="str">'mounted!'</span>);
+    <span class="kw">return</span> () => console.<span class="fn">log</span>(<span class="str">'unmounted!'</span>); <span class="cm">// cleanup = ngOnDestroy</span>
+  }, []);
+</span>
+  <span class="cm">// 2. [userId] — reaguje na zmianę userId, jak ngOnChanges</span>
+<span class="hl">  <span class="fn">useEffect</span>(() => {
+    <span class="kw">fetch</span>(<span class="str">`/api/users/</span>${userId}<span class="str">`</span>)
+      .<span class="fn">then</span>(r => r.<span class="fn">json</span>())
+      .<span class="fn">then</span>(data => <span class="fn">setUser</span>(data));
+  }, [userId]); <span class="cm">// dependency array!</span>
+</span>
+  <span class="cm">// 3. bez [] — działa po każdym renderze</span>
+  <span class="fn">useEffect</span>(() => {
+    document.title = user?.name ?? <span class="str">'Loading...'</span>;
+  }); <span class="cm">// ← brak tablicy = każdy render</span>
+
+  <span class="kw">return</span> <span class="tag">&lt;div&gt;</span>{user?.name}<span class="tag">&lt;/div&gt;</span>;
+}</code></pre>
+          </div>
+
+          <div class="callout warning">
+            <div class="callout-icon">⚠️</div>
+            <div class="callout-body">
+              <strong>Najczęstszy błąd: dependency array.</strong> Jeśli używasz zmiennej wewnątrz useEffect, musi być w tablicy. ESLint plugin <span class="ic">eslint-plugin-react-hooks</span> to sprawdza — zawsze go używaj.
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Async w useEffect — prawidłowy wzorzec</div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>React</div>
+            </div>
+            <pre><code><span class="fn">useEffect</span>(() => {
+  <span class="cm">// useEffect NIE może być async — callback musi zwrócić cleanup lub nic</span>
+  <span class="cm">// Rozwiązanie: IIFE lub osobna funkcja wewnątrz</span>
+
+  <span class="kw">const</span> <span class="fn">fetchUser</span> = <span class="kw">async</span> () => {
+    <span class="kw">try</span> {
+      <span class="kw">const</span> data = <span class="kw">await</span> <span class="fn">getUser</span>(userId);
+      <span class="fn">setUser</span>(data);
+    } <span class="kw">catch</span> (err) {
+      <span class="fn">setError</span>(err);
+    }
+  };
+
+  <span class="fn">fetchUser</span>();
+
+  <span class="cm">// Cleanup — anuluj request jeśli komponent się odmontuje</span>
+  <span class="kw">const</span> controller = <span class="kw">new</span> <span class="fn">AbortController</span>();
+  <span class="kw">return</span> () => controller.<span class="fn">abort</span>();
+}, [userId]);</code></pre>
+          </div>
+          <div class="callout success">
+            <div class="callout-icon">✓</div>
+            <div class="callout-body"><strong>Tip:</strong> W praktyce do fetchowania danych nie używaj useEffect + useState bezpośrednio. Użyj <strong>TanStack Query</strong> (Moduł 8) — obsługuje loading, error, cache, deduplication za Ciebie.</div>
+          </div>
+        </div>
+
+        <!-- QUIZ 3 -->
+        <div class="quiz-container">
+          <div class="quiz-label">Quiz 3.1</div>
+          <div class="quiz-question">Masz komponent z useEffect. Kiedy wywoła się cleanup (funkcja zwracana z useEffect)?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('3-1', this, false)">
+              <div class="option-letter">A</div>
+              Tylko gdy komponent jest odmontowywany (unmount)
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('3-1', this, true)">
+              <div class="option-letter">B</div>
+              Przed każdym kolejnym uruchomieniem efektu oraz przy odmontowaniu
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('3-1', this, false)">
+              <div class="option-letter">C</div>
+              Tylko gdy dependency array się zmieni
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('3-1', this, false)">
+              <div class="option-letter">D</div>
+              Nigdy — cleanup to tylko konwencja, React go ignoruje
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-3-1"></div>
+        </div>
+
+        <div class="quiz-container">
+          <div class="quiz-label">Quiz 3.2</div>
+          <div class="quiz-question">Co jest nie tak z tym kodem?<br><br><code style="font-family:monospace;font-size:12px;color:#abb2bf">const [items, setItems] = useState([]);<br>setItems(items.push(newItem)); // dodajemy element</code></div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('3-2', this, false)">
+              <div class="option-letter">A</div>
+              push nie istnieje na tablicach w React
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('3-2', this, true)">
+              <div class="option-letter">B</div>
+              push mutuje tablicę (nie tworzy nowej) i zwraca długość, nie tablicę — podwójny błąd
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('3-2', this, false)">
+              <div class="option-letter">C</div>
+              Powinno być setItems([newItem]) żeby zastąpić całą tablicę
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('3-2', this, false)">
+              <div class="option-letter">D</div>
+              Nic — ten kod jest poprawny
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-3-2"></div>
+        </div>
+
+        <div class="challenge">
+          <div class="challenge-label">🎯 Zadanie praktyczne</div>
+          <div class="challenge-title">Hook useFetch</div>
+          <div class="challenge-desc">Napisz custom hook <code style="font-family:monospace">useFetch&lt;T&gt;(url: string)</code> który zwraca <code style="font-family:monospace">{ data: T | null, loading: boolean, error: string | null }</code>. Anuluj request przy odmontowaniu komponentu przez AbortController.</div>
+          <div class="challenge-hints">
+            <button class="hint-toggle" onclick="toggleHints(this)">Pokaż podpowiedzi</button>
+            <div class="hints-content">
+              <div class="hint">Użyj trzech stanów: data, loading, error</div>
+              <div class="hint">useEffect z [url] w dependency array</div>
+              <div class="hint">new AbortController() → fetch(url, { signal: controller.signal })</div>
+              <div class="hint">W cleanup: controller.abort()</div>
+              <div class="hint">Złap błąd AbortError osobno — to nie jest prawdziwy błąd</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-buttons">
+          <button class="nav-btn prev" onclick="showPage('m2')">← Moduł 2</button>
+          <button class="nav-btn next" onclick="showPage('m4')">Moduł 4: Pełny arsenał hooków →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULE 4 -->
+    <div id="page-m4" class="module-page">
+      <div class="content">
+        <div class="module-header">
+          <div class="module-tag">Moduł 04</div>
+          <div class="module-title">Pełny arsenał<br><em>hooków</em></div>
+          <div class="module-desc">useRef, useMemo, useCallback, useContext, useReducer — i jak pisać własne.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">useRef — bez re-renderu</div>
+          <p><span class="ic">useRef</span> to kontener, który nie powoduje re-renderu przy zmianie. Używasz go do: dostępu do DOM, zapamiętania wartości między renderami (jak poprzednia wartość), timerów/eventListenerów.</p>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>React</div>
+            </div>
+            <pre><code><span class="kw">function</span> <span class="fn">SearchInput</span>() {
+  <span class="cm">// Dostęp do DOM — jak ViewChild w Angular</span>
+  <span class="kw">const</span> inputRef = <span class="fn">useRef</span>&lt;HTMLInputElement&gt;(<span class="kw">null</span>);
+
+  <span class="cm">// Wartość między renderami bez trigger re-render</span>
+  <span class="kw">const</span> timerRef = <span class="fn">useRef</span>&lt;ReturnType&lt;<span class="kw">typeof</span> setTimeout&gt;&gt;();
+
+  <span class="kw">const</span> <span class="fn">focusInput</span> = () => {
+    inputRef.current?.<span class="fn">focus</span>(); <span class="cm">// optional chaining!</span>
+  };
+
+  <span class="kw">const</span> <span class="fn">handleChange</span> = (e: ChangeEvent&lt;HTMLInputElement&gt;) => {
+    <span class="fn">clearTimeout</span>(timerRef.current);
+    timerRef.current = <span class="fn">setTimeout</span>(() => {
+      <span class="fn">search</span>(e.target.value);
+    }, <span class="num">300</span>);
+  };
+
+  <span class="kw">return</span> <span class="tag">&lt;input</span> <span class="attr">ref</span>={inputRef} <span class="attr">onChange</span>={handleChange} <span class="tag">/&gt;</span>;
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">useMemo i useCallback — optymalizacja</div>
+          <div class="callout info">
+            <div class="callout-icon">💡</div>
+            <div class="callout-body"><strong>Zasada:</strong> Nie używaj ich domyślnie. Używaj gdy: 1) masz pomierzony problem z wydajnością, 2) przekazujesz callback do memoizowanego child-komponentu, 3) wyliczasz coś kosztownego na każdym renderze.</div>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>React</div>
+            </div>
+            <pre><code><span class="kw">function</span> <span class="fn">ProductList</span>({ products, filters }) {
+  <span class="cm">// useMemo — memoizuje wynik obliczeń</span>
+  <span class="cm">// Jak pure pipe w Angular — nie przelicza bez potrzeby</span>
+  <span class="kw">const</span> filteredProducts = <span class="fn">useMemo</span>(() => {
+    <span class="kw">return</span> products.<span class="fn">filter</span>(p =>
+      p.category === filters.category &&
+      p.price <= filters.maxPrice
+    );
+  }, [products, filters]); <span class="cm">// przelicz tylko gdy się zmieniły</span>
+
+  <span class="cm">// useCallback — memoizuje funkcję</span>
+  <span class="cm">// Bez tego: nowa referencja na każdym renderze → child się re-renderuje</span>
+  <span class="kw">const</span> <span class="fn">handleAddToCart</span> = <span class="fn">useCallback</span>((productId: <span class="kw">string</span>) => {
+    <span class="fn">addToCart</span>(productId, filters.userId);
+  }, [filters.userId]);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;List</span>
+      <span class="attr">items</span>={filteredProducts}
+      <span class="attr">onAdd</span>={handleAddToCart} <span class="cm">// stable reference!</span>
+    <span class="tag">/&gt;</span>
+  );
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">useContext — lekki DI</div>
+          <p>Odpowiednik Dependency Injection z Angulara, ale prostszy. Używaj do: theme, auth state, language, user preferences. Nie do wszystkiego — do tego jest Zustand (Moduł 7).</p>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>React</div>
+            </div>
+            <pre><code><span class="cm">// 1. Stwórz context</span>
+<span class="kw">interface</span> <span class="fn">AuthContext</span> {
+  user: User | <span class="kw">null</span>;
+  <span class="fn">logout</span>: () => <span class="kw">void</span>;
+}
+<span class="kw">const</span> AuthContext = <span class="fn">createContext</span>&lt;<span class="fn">AuthContext</span>&gt;(<span class="kw">null</span>!);
+
+<span class="cm">// 2. Provider — otocz aplikację lub drzewo</span>
+<span class="kw">export function</span> <span class="fn">AuthProvider</span>({ children }) {
+  <span class="kw">const</span> [user, setUser] = <span class="fn">useState</span>&lt;User | <span class="kw">null</span>&gt;(<span class="kw">null</span>);
+  <span class="kw">const</span> <span class="fn">logout</span> = <span class="fn">useCallback</span>(() => <span class="fn">setUser</span>(<span class="kw">null</span>), []);
+  <span class="kw">return</span> (
+    <span class="tag">&lt;AuthContext.Provider</span> <span class="attr">value</span>={{ user, logout }}<span class="tag">&gt;</span>
+      {children}
+    <span class="tag">&lt;/AuthContext.Provider&gt;</span>
+  );
+}
+
+<span class="cm">// 3. Custom hook — ergonomiczne użycie</span>
+<span class="kw">export function</span> <span class="fn">useAuth</span>() {
+  <span class="kw">const</span> ctx = <span class="fn">useContext</span>(AuthContext);
+  <span class="kw">if</span> (!ctx) <span class="kw">throw new</span> Error(<span class="str">'useAuth musi być w AuthProvider'</span>);
+  <span class="kw">return</span> ctx;
+}
+
+<span class="cm">// 4. Użycie w dowolnym komponencie</span>
+<span class="kw">function</span> <span class="fn">Header</span>() {
+  <span class="kw">const</span> { user, logout } = <span class="fn">useAuth</span>();
+  <span class="kw">return</span> <span class="tag">&lt;button</span> <span class="attr">onClick</span>={logout}<span class="tag">&gt;</span>Wyloguj {user?.name}<span class="tag">&lt;/button&gt;</span>;
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Custom hooks — odpowiednik serwisów</div>
+          <p>Custom hook to funkcja zaczynająca się od <span class="ic">use</span>, która może używać innych hooków. To jest wzorzec kompozycji w React — wyciągasz logikę do reużywalnej funkcji.</p>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>Custom Hook</div>
+            </div>
+            <pre><code><span class="cm">// useLocalStorage — persystentny stan</span>
+<span class="kw">function</span> <span class="fn">useLocalStorage</span>&lt;T&gt;(key: <span class="kw">string</span>, initial: T) {
+  <span class="kw">const</span> [value, setValue] = <span class="fn">useState</span>&lt;T&gt;(() => {
+    <span class="kw">const</span> stored = localStorage.<span class="fn">getItem</span>(key);
+    <span class="kw">return</span> stored ? <span class="fn">JSON.parse</span>(stored) : initial;
+  });
+
+  <span class="kw">const</span> <span class="fn">set</span> = <span class="fn">useCallback</span>((val: T) => {
+    <span class="fn">setValue</span>(val);
+    localStorage.<span class="fn">setItem</span>(key, <span class="fn">JSON.stringify</span>(val));
+  }, [key]);
+
+  <span class="kw">return</span> [value, set] <span class="kw">as const</span>;
+}
+
+<span class="cm">// useDebounce — debounce wartości</span>
+<span class="kw">function</span> <span class="fn">useDebounce</span>&lt;T&gt;(value: T, delay: <span class="kw">number</span>) {
+  <span class="kw">const</span> [debounced, setDebounced] = <span class="fn">useState</span>(value);
+  <span class="fn">useEffect</span>(() => {
+    <span class="kw">const</span> timer = <span class="fn">setTimeout</span>(() => <span class="fn">setDebounced</span>(value), delay);
+    <span class="kw">return</span> () => <span class="fn">clearTimeout</span>(timer);
+  }, [value, delay]);
+  <span class="kw">return</span> debounced;
+}
+
+<span class="cm">// Użycie</span>
+<span class="kw">function</span> <span class="fn">SearchPage</span>() {
+  <span class="kw">const</span> [query, setQuery] = <span class="fn">useLocalStorage</span>(<span class="str">'search'</span>, <span class="str">''</span>);
+  <span class="kw">const</span> debouncedQuery = <span class="fn">useDebounce</span>(query, <span class="num">300</span>);
+  <span class="cm">// ...</span>
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- QUIZ 4 -->
+        <div class="quiz-container">
+          <div class="quiz-label">Quiz 4.1</div>
+          <div class="quiz-question">Kiedy useCallback jest faktycznie potrzebny?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('4-1', this, false)">
+              <div class="option-letter">A</div>
+              Zawsze — memoizuj każdy callback w komponencie
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('4-1', this, false)">
+              <div class="option-letter">B</div>
+              Nigdy — React i tak optymalizuje automatycznie
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('4-1', this, true)">
+              <div class="option-letter">C</div>
+              Gdy przekazujesz callback do memoizowanego child-komponentu (React.memo) lub gdy jest w dependency array innego hooka
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('4-1', this, false)">
+              <div class="option-letter">D</div>
+              Tylko w Server Components
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-4-1"></div>
+        </div>
+
+        <div class="quiz-container">
+          <div class="quiz-label">Quiz 4.2</div>
+          <div class="quiz-question">Czym różni się useRef od useState?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('4-2', this, false)">
+              <div class="option-letter">A</div>
+              useRef przechowuje tylko referencje do DOM, useState dowolne wartości
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('4-2', this, false)">
+              <div class="option-letter">B</div>
+              Nie ma różnicy — oba powodują re-render przy zmianie
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('4-2', this, true)">
+              <div class="option-letter">C</div>
+              Zmiana .current w useRef NIE powoduje re-renderu. useState powoduje re-render przy każdej zmianie.
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('4-2', this, false)">
+              <div class="option-letter">D</div>
+              useRef jest deprecated — używaj tylko useState
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-4-2"></div>
+        </div>
+
+        <div class="challenge">
+          <div class="challenge-label">🎯 Zadanie praktyczne</div>
+          <div class="challenge-title">Hook useWindowSize</div>
+          <div class="challenge-desc">Napisz custom hook <code style="font-family:monospace">useWindowSize()</code> który zwraca <code style="font-family:monospace">{ width: number, height: number }</code> i aktualizuje się przy resize okna. Pamiętaj o cleanup!</div>
+          <div class="challenge-hints">
+            <button class="hint-toggle" onclick="toggleHints(this)">Pokaż podpowiedzi</button>
+            <div class="hints-content">
+              <div class="hint">Stan: { width: window.innerWidth, height: window.innerHeight }</div>
+              <div class="hint">addEventListener('resize', handler) w useEffect</div>
+              <div class="hint">Cleanup: return () => removeEventListener('resize', handler)</div>
+              <div class="hint">[] jako dependency array — listener dodajesz raz</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-buttons">
+          <button class="nav-btn prev" onclick="showPage('m3')">← Moduł 3</button>
+          <button class="nav-btn next" onclick="showPage('m5')">Moduł 5: Formularze →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULE 5 -->
+    <div id="page-m5" class="module-page">
+      <div class="content">
+        <div class="module-header">
+          <div class="module-tag">Moduł 05</div>
+          <div class="module-title">Formularze<br>& <em>React Hook Form</em></div>
+          <div class="module-desc">Formularze w React to jeden z najważniejszych tematów. React Hook Form to de facto standard — lżejszy i prostszy niż Reactive Forms.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Controlled vs Uncontrolled</div>
+          <p>W Angular wszystko było "controlled" przez FormControl. React ma dwa podejścia:</p>
+
+          <div class="code-split">
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-lang">JSX</div>
+                <div class="code-label"><span class="dot dot-react"></span>Controlled input</div>
+              </div>
+              <pre><code><span class="cm">// Stan jest w React — React kontroluje</span>
+<span class="kw">const</span> [email, setEmail] = <span class="fn">useState</span>(<span class="str">''</span>);
+
+<span class="tag">&lt;input</span>
+  <span class="attr">value</span>={email}
+  <span class="attr">onChange</span>={e => <span class="fn">setEmail</span>(e.target.value)}
+<span class="tag">/&gt;</span>
+
+<span class="cm">// Każde naciśnięcie klawisza → re-render</span>
+<span class="cm">// Dobre do: live validation, dependent fields</span></code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-lang">JSX</div>
+                <div class="code-label"><span class="dot dot-react"></span>Uncontrolled (ref)</div>
+              </div>
+              <pre><code><span class="cm">// DOM przechowuje wartość — React nie kontroluje</span>
+<span class="kw">const</span> emailRef = <span class="fn">useRef</span>();
+
+<span class="tag">&lt;input</span> <span class="attr">ref</span>={emailRef} <span class="tag">/&gt;</span>
+
+<span class="cm">// Wartość przy submit:</span>
+<span class="kw">const</span> val = emailRef.current.value;
+
+<span class="cm">// Dobre do: proste formy, duże formularze
+// React Hook Form używa tego podejścia!</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">React Hook Form — standard w 2025</div>
+          <p>Działa uncontrolled (zero re-renderów przy pisaniu), ma integrację z TypeScript i Zod, obsługuje złożone walidacje.</p>
+
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>React Hook Form + Zod</div>
+            </div>
+            <pre><code><span class="kw">import</span> { useForm } <span class="kw">from</span> <span class="str">'react-hook-form'</span>;
+<span class="kw">import</span> { zodResolver } <span class="kw">from</span> <span class="str">'@hookform/resolvers/zod'</span>;
+<span class="kw">import</span> { z } <span class="kw">from</span> <span class="str">'zod'</span>;
+
+<span class="cm">// 1. Schema walidacji</span>
+<span class="kw">const</span> schema = z.<span class="fn">object</span>({
+  email: z.<span class="fn">string</span>().<span class="fn">email</span>(<span class="str">'Nieprawidłowy email'</span>),
+  password: z.<span class="fn">string</span>().<span class="fn">min</span>(<span class="num">8</span>, <span class="str">'Min. 8 znaków'</span>),
+  age: z.<span class="fn">number</span>().<span class="fn">min</span>(<span class="num">18</span>),
+});
+
+<span class="kw">type</span> <span class="fn">FormData</span> = z.<span class="fn">infer</span>&lt;<span class="kw">typeof</span> schema&gt;;
+
+<span class="kw">function</span> <span class="fn">LoginForm</span>() {
+  <span class="kw">const</span> {
+    register,      <span class="cm">// rejestruje pole</span>
+    handleSubmit,  <span class="cm">// wrapper na submit</span>
+    formState: { errors, isSubmitting },
+    watch,         <span class="cm">// obserwuje wartość pola</span>
+    setValue,      <span class="cm">// programowe ustawianie</span>
+  } = <span class="fn">useForm</span>&lt;<span class="fn">FormData</span>&gt;({
+    resolver: <span class="fn">zodResolver</span>(schema),
+    defaultValues: { email: <span class="str">''</span>, password: <span class="str">''</span> },
+  });
+
+  <span class="kw">const</span> <span class="fn">onSubmit</span> = <span class="kw">async</span> (data: <span class="fn">FormData</span>) => {
+    <span class="kw">await</span> <span class="fn">login</span>(data); <span class="cm">// data jest już zwalidowana i typed</span>
+  };
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;form</span> <span class="attr">onSubmit</span>={<span class="fn">handleSubmit</span>(onSubmit)}<span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span>
+        {..register(<span class="str">'email'</span>)}
+        <span class="attr">placeholder</span>=<span class="str">"Email"</span>
+      <span class="tag">/&gt;</span>
+      {errors.email && (
+        <span class="tag">&lt;span&gt;</span>{errors.email.message}<span class="tag">&lt;/span&gt;</span>
+      )}
+
+      <span class="tag">&lt;input</span>
+        {..register(<span class="str">'password'</span>)}
+        <span class="attr">type</span>=<span class="str">"password"</span>
+      <span class="tag">/&gt;</span>
+      {errors.password && (
+        <span class="tag">&lt;span&gt;</span>{errors.password.message}<span class="tag">&lt;/span&gt;</span>
+      )}
+
+      <span class="tag">&lt;button</span> <span class="attr">disabled</span>={isSubmitting}<span class="tag">&gt;</span>
+        {isSubmitting ? <span class="str">'Logowanie...'</span> : <span class="str">'Zaloguj'</span>}
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/form&gt;</span>
+  );
+}</code></pre>
+          </div>
+
+          <div class="callout success">
+            <div class="callout-icon">✓</div>
+            <div class="callout-body">Porównanie z Angular Reactive Forms: <strong>brak boilerplate</strong> FormGroup/FormControl, typy wyciągane z Zod schema automatycznie, zero re-renderów przy pisaniu (uncontrolled), integracja z dowolnym komponentem UI przez <span class="ic">Controller</span>.</div>
+          </div>
+        </div>
+
+        <!-- QUIZ 5 -->
+        <div class="quiz-container">
+          <div class="quiz-label">Quiz 5.1</div>
+          <div class="quiz-question">Dlaczego React Hook Form jest wydajniejszy niż Controlled inputs przy dużych formularzach?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('5-1', this, false)">
+              <div class="option-letter">A</div>
+              Bo waliduje po stronie serwera
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('5-1', this, true)">
+              <div class="option-letter">B</div>
+              Używa uncontrolled inputs (ref) — DOM zarządza stanem, React nie re-renderuje przy każdym keystroke
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('5-1', this, false)">
+              <div class="option-letter">C</div>
+              Używa Web Workers do walidacji asynchronicznej
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('5-1', this, false)">
+              <div class="option-letter">D</div>
+              Kompiluje formularz do WebAssembly
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-5-1"></div>
+        </div>
+
+        <div class="challenge">
+          <div class="challenge-label">🎯 Zadanie praktyczne</div>
+          <div class="challenge-title">Formularz rejestracji</div>
+          <div class="challenge-desc">Zbuduj formularz rejestracji z polami: name (min 2 znaki), email, password (min 8 znaków, musi mieć wielką literę), confirmPassword (musi pasować do password). Użyj React Hook Form + Zod. Pokaż błędy pod każdym polem.</div>
+          <div class="challenge-hints">
+            <button class="hint-toggle" onclick="toggleHints(this)">Pokaż podpowiedzi</button>
+            <div class="hints-content">
+              <div class="hint">Walidacja hasła: z.string().regex(/[A-Z]/, 'Wymagana wielka litera')</div>
+              <div class="hint">confirmPassword: z.string(), potem .refine() na całym obiekcie</div>
+              <div class="hint">schema.refine(data => data.password === data.confirmPassword, { message: '...', path: ['confirmPassword'] })</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-buttons">
+          <button class="nav-btn prev" onclick="showPage('m4')">← Moduł 4</button>
+          <button class="nav-btn next" onclick="showPage('m6')">Moduł 6: Routing →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULE 6 -->
+    <div id="page-m6" class="module-page">
+      <div class="content">
+        <div class="module-header">
+          <div class="module-tag">Moduł 06</div>
+          <div class="module-title">Routing —<br><em>React Router v6</em></div>
+          <div class="module-desc">Deklaratywne routowanie, nested routes, lazy loading i ochrona tras.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Konfiguracja routera</div>
+          <div class="code-split">
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-lang">Angular</div>
+                <div class="code-label"><span class="dot dot-angular"></span>Routes</div>
+              </div>
+              <pre><code><span class="kw">const</span> routes: Routes = [
+  { path: <span class="str">''</span>, component: HomeComponent },
+  { path: <span class="str">'users'</span>, children: [
+    { path: <span class="str">''</span>, component: UserList },
+    { path: <span class="str">':id'</span>, component: UserDetail },
+  ]},
+  {
+    path: <span class="str">'admin'</span>,
+    canActivate: [authGuard],
+    loadChildren: () => <span class="kw">import</span>(...)
+  }
+];</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-lang">React</div>
+                <div class="code-label"><span class="dot dot-react"></span>React Router v6</div>
+              </div>
+              <pre><code><span class="kw">const</span> router = <span class="fn">createBrowserRouter</span>([
+  { path: <span class="str">'/'</span>, element: <span class="tag">&lt;Home /&gt;</span> },
+  {
+    path: <span class="str">'users'</span>,
+    element: <span class="tag">&lt;UsersLayout /&gt;</span>,
+    children: [
+      { index: <span class="kw">true</span>, element: <span class="tag">&lt;UserList /&gt;</span> },
+      { path: <span class="str">':id'</span>, element: <span class="tag">&lt;UserDetail /&gt;</span> },
+    ]
+  },
+  {
+    path: <span class="str">'admin'</span>,
+    loader: authLoader, <span class="cm">// guard jako loader</span>
+    lazy: () => <span class="kw">import</span>(<span class="str">'./Admin'</span>),
+  }
+]);</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Hooki nawigacji</div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>React Router hooks</div>
+            </div>
+            <pre><code><span class="kw">import</span> {
+  useNavigate, useParams, useSearchParams,
+  useLocation, Link, NavLink
+} <span class="kw">from</span> <span class="str">'react-router-dom'</span>;
+
+<span class="kw">function</span> <span class="fn">UserDetail</span>() {
+  <span class="kw">const</span> { id } = <span class="fn">useParams</span>();            <span class="cm">// :id z URL</span>
+  <span class="kw">const</span> navigate = <span class="fn">useNavigate</span>();       <span class="cm">// programowa nawigacja</span>
+  <span class="kw">const</span> location = <span class="fn">useLocation</span>();       <span class="cm">// aktualny URL</span>
+  <span class="kw">const</span> [params] = <span class="fn">useSearchParams</span>(); <span class="cm">// query params</span>
+
+  <span class="kw">const</span> page = params.<span class="fn">get</span>(<span class="str">'page'</span>); <span class="cm">// ?page=2</span>
+
+  <span class="kw">const</span> <span class="fn">goBack</span> = () => <span class="fn">navigate</span>(-<span class="num">1</span>);         <span class="cm">// jak history.back()</span>
+  <span class="kw">const</span> <span class="fn">goUsers</span> = () => <span class="fn">navigate</span>(<span class="str">'/users'</span>); <span class="cm">// absolutna</span>
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cm">{/* Link = RouterLink w Angular */}</span>
+      <span class="tag">&lt;Link</span> <span class="attr">to</span>=<span class="str">"/users"</span><span class="tag">&gt;</span>Powrót<span class="tag">&lt;/Link&gt;</span>
+
+      <span class="cm">{/* NavLink dodaje klasę 'active' */}</span>
+      <span class="tag">&lt;NavLink</span> <span class="attr">to</span>=<span class="str">"/dashboard"</span><span class="tag">&gt;</span>Dashboard<span class="tag">&lt;/NavLink&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Guard — ochrona tras</div>
+          <p>React Router nie ma osobnego API na guardy. Używasz <span class="ic">loader</span> (do sprawdzania przed renderowaniem) lub komponentu wrapper.</p>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>Protected Route</div>
+            </div>
+            <pre><code><span class="cm">// Wzorzec 1: loader jako guard</span>
+<span class="kw">async function</span> <span class="fn">authLoader</span>() {
+  <span class="kw">const</span> user = <span class="kw">await</span> <span class="fn">getUser</span>();
+  <span class="kw">if</span> (!user) <span class="kw">throw</span> <span class="fn">redirect</span>(<span class="str">'/login'</span>);
+  <span class="kw">return</span> user;
+}
+
+<span class="cm">// Wzorzec 2: wrapper komponent</span>
+<span class="kw">function</span> <span class="fn">RequireAuth</span>({ children }) {
+  <span class="kw">const</span> { user } = <span class="fn">useAuth</span>();
+  <span class="kw">const</span> location = <span class="fn">useLocation</span>();
+
+  <span class="kw">if</span> (!user) {
+    <span class="kw">return</span> <span class="tag">&lt;Navigate</span>
+      <span class="attr">to</span>=<span class="str">"/login"</span>
+      <span class="attr">state</span>={{ from: location }}
+      <span class="attr">replace</span>
+    <span class="tag">/&gt;</span>;
+  }
+  <span class="kw">return</span> children;
+}
+
+<span class="cm">// w routerze:</span>
+{
+  path: <span class="str">'dashboard'</span>,
+  element: (
+    <span class="tag">&lt;RequireAuth&gt;</span>
+      <span class="tag">&lt;Dashboard /&gt;</span>
+    <span class="tag">&lt;/RequireAuth&gt;</span>
+  )
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- QUIZ 6 -->
+        <div class="quiz-container">
+          <div class="quiz-label">Quiz 6.1</div>
+          <div class="quiz-question">Jak w React Router v6 zdefiniować "index route" — komponent wyświetlany gdy jesteś na ścieżce rodzica bez żadnej podrouty?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('6-1', this, false)">
+              <div class="option-letter">A</div>
+              path: '*'
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('6-1', this, false)">
+              <div class="option-letter">B</div>
+              path: ''
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('6-1', this, true)">
+              <div class="option-letter">C</div>
+              index: true (bez path)
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('6-1', this, false)">
+              <div class="option-letter">D</div>
+              path: '/'
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-6-1"></div>
+        </div>
+
+        <div class="nav-buttons">
+          <button class="nav-btn prev" onclick="showPage('m5')">← Moduł 5</button>
+          <button class="nav-btn next" onclick="showPage('m7')">Moduł 7: Zustand →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULE 7 -->
+    <div id="page-m7" class="module-page">
+      <div class="content">
+        <div class="module-header">
+          <div class="module-tag">Moduł 07</div>
+          <div class="module-title">Global state —<br><em>Zustand</em></div>
+          <div class="module-desc">Zarządzanie stanem globalnym bez Redux-owego boilerplate. Zustand to 1KB biblioteki, która robi wszystko czego potrzebujesz.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Dlaczego nie Redux?</div>
+          <p>Redux był standardem przez lata, ale Redux Toolkit (RTK) wciąż wymaga sporo konfiguracji: actions, reducers, selectors, configureStore. Zustand to całkowite przeciwieństwo — minimal API, zero boilerplate.</p>
+
+          <div class="callout info">
+            <div class="callout-icon">📊</div>
+            <div class="callout-body"><strong>Kiedy co:</strong> Zustand → 90% projektów. Redux Toolkit → gdy masz skomplikowany flow z middleware, lub pracujesz z legacy kodem. Jotai/Recoil → atomic state. Context API → mało zmieniające się dane (theme, locale).</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Tworzenie store</div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>Zustand store</div>
+            </div>
+            <pre><code><span class="kw">import</span> { create } <span class="kw">from</span> <span class="str">'zustand'</span>;
+<span class="kw">import</span> { persist } <span class="kw">from</span> <span class="str">'zustand/middleware'</span>;
+
+<span class="kw">interface</span> <span class="fn">CartStore</span> {
+  items: CartItem[];
+  total: <span class="kw">number</span>;
+  <span class="fn">addItem</span>: (item: CartItem) => <span class="kw">void</span>;
+  <span class="fn">removeItem</span>: (id: <span class="kw">string</span>) => <span class="kw">void</span>;
+  <span class="fn">clearCart</span>: () => <span class="kw">void</span>;
+}
+
+<span class="kw">export const</span> useCartStore = <span class="fn">create</span>&lt;<span class="fn">CartStore</span>&gt;()(
+  <span class="fn">persist</span>(  <span class="cm">// middleware: auto-zapisuje do localStorage!</span>
+    (<span class="fn">set</span>, <span class="fn">get</span>) => ({
+      items: [],
+      total: <span class="num">0</span>,
+
+      <span class="fn">addItem</span>: (item) =>
+        <span class="fn">set</span>(state => {
+          <span class="kw">const</span> existing = state.items.<span class="fn">find</span>(i => i.id === item.id);
+          <span class="kw">if</span> (existing) {
+            <span class="kw">return</span> {
+              items: state.items.<span class="fn">map</span>(i =>
+                i.id === item.id
+                  ? {...i, qty: i.qty + <span class="num">1</span>}
+                  : i
+              )
+            };
+          }
+          <span class="kw">return</span> { items: [...state.items, {...item, qty: <span class="num">1</span>}] };
+        }),
+
+      <span class="fn">removeItem</span>: (id) =>
+        <span class="fn">set</span>(state => ({
+          items: state.items.<span class="fn">filter</span>(i => i.id !== id)
+        })),
+
+      <span class="fn">clearCart</span>: () => <span class="fn">set</span>({ items: [], total: <span class="num">0</span> }),
+    }),
+    { name: <span class="str">'cart-storage'</span> }
+  )
+);</code></pre>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Używanie store — selektory</div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>W komponentach</div>
+            </div>
+            <pre><code><span class="kw">function</span> <span class="fn">CartIcon</span>() {
+  <span class="cm">// Selektor — re-render TYLKO gdy items.length się zmieni</span>
+  <span class="kw">const</span> count = <span class="fn">useCartStore</span>(state => state.items.length);
+
+  <span class="kw">return</span> <span class="tag">&lt;span&gt;</span>🛒 {count}<span class="tag">&lt;/span&gt;</span>;
+}
+
+<span class="kw">function</span> <span class="fn">ProductCard</span>({ product }) {
+  <span class="cm">// Wyciągamy tylko akcję — bez reaktywności na całym store</span>
+  <span class="kw">const</span> addItem = <span class="fn">useCartStore</span>(state => state.addItem);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;button</span> <span class="attr">onClick</span>={() => <span class="fn">addItem</span>(product)}<span class="tag">&gt;</span>
+      Dodaj do koszyka
+    <span class="tag">&lt;/button&gt;</span>
+  );
+}
+
+<span class="kw">function</span> <span class="fn">CartPage</span>() {
+  <span class="cm">// Wiele wartości naraz</span>
+  <span class="kw">const</span> { items, total, clearCart } = <span class="fn">useCartStore</span>();
+  <span class="cm">// Uwaga: re-renderuje przy każdej zmianie store!</span>
+  <span class="cm">// Dla wydajności: używaj selektorów per-field</span>
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- QUIZ 7 -->
+        <div class="quiz-container">
+          <div class="quiz-label">Quiz 7.1</div>
+          <div class="quiz-question">Masz store Zustand z 10 polami. Komponent używa tylko <code style="font-family:monospace">useStore(s => s.userName)</code>. Kiedy komponent się re-renderuje?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('7-1', this, false)">
+              <div class="option-letter">A</div>
+              Przy każdej zmianie czegokolwiek w storze
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('7-1', this, true)">
+              <div class="option-letter">B</div>
+              Tylko gdy userName się zmieni — selektor izoluje reaktywność
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('7-1', this, false)">
+              <div class="option-letter">C</div>
+              Nigdy — Zustand nie powoduje re-renderów
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('7-1', this, false)">
+              <div class="option-letter">D</div>
+              Tylko gdy komponent wywołał akcję
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-7-1"></div>
+        </div>
+
+        <div class="challenge">
+          <div class="challenge-label">🎯 Zadanie praktyczne</div>
+          <div class="challenge-title">Store powiadomień</div>
+          <div class="challenge-desc">Zbuduj Zustand store <code style="font-family:monospace">useNotificationStore</code> z: listą powiadomień (id, message, type: 'success'|'error'|'info'), akcją <code style="font-family:monospace">addNotification</code> (auto-generuje id) i <code style="font-family:monospace">dismissNotification(id)</code>. Powiadomienia powinny auto-znikać po 3 sekundach.</div>
+          <div class="challenge-hints">
+            <button class="hint-toggle" onclick="toggleHints(this)">Pokaż podpowiedzi</button>
+            <div class="hints-content">
+              <div class="hint">id: crypto.randomUUID() lub Date.now().toString()</div>
+              <div class="hint">W addNotification: setTimeout(() => dismissNotification(id), 3000)</div>
+              <div class="hint">setTimeout ma dostęp do id przez closure</div>
+              <div class="hint">get() w Zustand daje aktualny stan bez reaktywności</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-buttons">
+          <button class="nav-btn prev" onclick="showPage('m6')">← Moduł 6</button>
+          <button class="nav-btn next" onclick="showPage('m8')">Moduł 8: TanStack Query →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULE 8 -->
+    <div id="page-m8" class="module-page">
+      <div class="content">
+        <div class="module-header">
+          <div class="module-tag">Moduł 08</div>
+          <div class="module-title">Data fetching —<br><em>TanStack Query</em></div>
+          <div class="module-desc">Zastępuje HttpClient + RxJS do zarządzania danymi z serwera. Cache, loading states, mutations, optimistic updates — wszystko gotowe.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Dlaczego TanStack Query?</div>
+          <p>Bez TanStack Query piszesz ręcznie: loading state, error state, refetch, cache, deduplication, background refresh... To dużo kodu. TanStack Query robi to wszystko automatycznie.</p>
+
+          <div class="callout info">
+            <div class="callout-icon">🔄</div>
+            <div class="callout-body"><strong>Mapowanie z Angular:</strong> <span class="ic">HttpClient.get() + async pipe</span> ≈ <span class="ic">useQuery()</span>. <span class="ic">HttpClient.post() + switchMap</span> ≈ <span class="ic">useMutation()</span>.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">useQuery — pobieranie danych</div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>TanStack Query</div>
+            </div>
+            <pre><code><span class="kw">import</span> { useQuery, QueryClient, QueryClientProvider } <span class="kw">from</span> <span class="str">'@tanstack/react-query'</span>;
+
+<span class="cm">// Setup — raz w app.tsx</span>
+<span class="kw">const</span> queryClient = <span class="kw">new</span> <span class="fn">QueryClient</span>({
+  defaultOptions: {
+    queries: { staleTime: <span class="num">60_000</span> } <span class="cm">// cache przez 60s</span>
+  }
+});
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;QueryClientProvider</span> <span class="attr">client</span>={queryClient}<span class="tag">&gt;</span>
+      <span class="tag">&lt;MyApp /&gt;</span>
+    <span class="tag">&lt;/QueryClientProvider&gt;</span>
+  );
+}
+
+<span class="cm">// Użycie w komponencie</span>
+<span class="kw">function</span> <span class="fn">UserList</span>() {
+  <span class="kw">const</span> {
+    data: users,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = <span class="fn">useQuery</span>({
+    queryKey: [<span class="str">'users'</span>],       <span class="cm">// unikalny klucz cache</span>
+    queryFn: () => <span class="fn">fetchUsers</span>(), <span class="cm">// funkcja zwracająca Promise</span>
+    staleTime: <span class="num">5 * 60_000</span>,      <span class="cm">// 5 minut cache</span>
+  });
+
+  <span class="kw">if</span> (isLoading) <span class="kw">return</span> <span class="tag">&lt;Spinner /&gt;</span>;
+  <span class="kw">if</span> (isError) <span class="kw">return</span> <span class="tag">&lt;Error</span> <span class="attr">message</span>={error.message} <span class="tag">/&gt;</span>;
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      {users.<span class="fn">map</span>(u => (
+        <span class="tag">&lt;li</span> <span class="attr">key</span>={u.id}<span class="tag">&gt;</span>{u.name}<span class="tag">&lt;/li&gt;</span>
+      ))}
+    <span class="tag">&lt;/ul&gt;</span>
+  );
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">useMutation — zapis danych</div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>Mutation z invalidation</div>
+            </div>
+            <pre><code><span class="kw">function</span> <span class="fn">CreateUserForm</span>() {
+  <span class="kw">const</span> queryClient = <span class="fn">useQueryClient</span>();
+
+  <span class="kw">const</span> mutation = <span class="fn">useMutation</span>({
+    mutationFn: (newUser: CreateUserDto) =>
+      <span class="fn">createUser</span>(newUser),
+
+    <span class="fn">onSuccess</span>: () => {
+      <span class="cm">// Invalidate → automatyczny refetch listy użytkowników</span>
+      queryClient.<span class="fn">invalidateQueries</span>({ queryKey: [<span class="str">'users'</span>] });
+    },
+
+    <span class="fn">onError</span>: (error) => {
+      <span class="fn">toast</span>.<span class="fn">error</span>(<span class="str">`Błąd: </span>${error.message}<span class="str">`</span>);
+    },
+  });
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;form</span> <span class="attr">onSubmit</span>={<span class="fn">handleSubmit</span>(data => mutation.<span class="fn">mutate</span>(data))}<span class="tag">&gt;</span>
+      <span class="cm">{/* ... pola formularza */}</span>
+      <span class="tag">&lt;button</span>
+        <span class="attr">type</span>=<span class="str">"submit"</span>
+        <span class="attr">disabled</span>={mutation.isPending}
+      <span class="tag">&gt;</span>
+        {mutation.isPending ? <span class="str">'Zapisywanie...'</span> : <span class="str">'Zapisz'</span>}
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/form&gt;</span>
+  );
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- QUIZ 8 -->
+        <div class="quiz-container">
+          <div class="quiz-label">Quiz 8.1</div>
+          <div class="quiz-question">queryKey: ['users', userId] — co się stanie, gdy userId się zmieni?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('8-1', this, false)">
+              <div class="option-letter">A</div>
+              Nic — queryKey to tylko label, nie wpływa na cache
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('8-1', this, true)">
+              <div class="option-letter">B</div>
+              TanStack Query automatycznie refetchuje dla nowego userId (inny klucz = inne zapytanie)
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('8-1', this, false)">
+              <div class="option-letter">C</div>
+              Musisz ręcznie wywołać refetch() po zmianie userId
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('8-1', this, false)">
+              <div class="option-letter">D</div>
+              Rzuca błąd — queryKey nie może być tablicą
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-8-1"></div>
+        </div>
+
+        <div class="nav-buttons">
+          <button class="nav-btn prev" onclick="showPage('m7')">← Moduł 7</button>
+          <button class="nav-btn next" onclick="showPage('m9')">Moduł 9: Wzorce →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULE 9 -->
+    <div id="page-m9" class="module-page">
+      <div class="content">
+        <div class="module-header">
+          <div class="module-tag">Moduł 09</div>
+          <div class="module-title">Wzorce<br>i <em>architektura</em></div>
+          <div class="module-desc">Compound Components, Render Props, Composition — wzorce, których szukają na rozmowie senior.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Composition over configuration</div>
+          <p>React faworyzuje kompozycję. Zamiast jednego komponentu z 20 propsami — kilka małych, które składasz razem. To fundamentalna różnica kulturowa względem Angulara.</p>
+
+          <div class="code-split">
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-lang">Anti-pattern</div>
+                <div class="code-label"><span class="dot dot-neutral"></span>Props drilling</div>
+              </div>
+              <pre><code><span class="cm">// ❌ Prop explosion</span>
+<span class="tag">&lt;Modal</span>
+  <span class="attr">title</span>=<span class="str">"Tytuł"</span>
+  <span class="attr">showHeader</span>={<span class="kw">true</span>}
+  <span class="attr">showFooter</span>={<span class="kw">true</span>}
+  <span class="attr">footerBtnLabel</span>=<span class="str">"OK"</span>
+  <span class="attr">onClose</span>={fn}
+  <span class="attr">onConfirm</span>={fn}
+  <span class="attr">isLoading</span>={<span class="kw">false</span>}
+  <span class="attr">content</span>={<span class="tag">&lt;p&gt;</span>...<span class="tag">&lt;/p&gt;</span>}
+<span class="tag">/&gt;</span></code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-lang">Pattern</div>
+                <div class="code-label"><span class="dot dot-react"></span>Compound Components</div>
+              </div>
+              <pre><code><span class="cm">// ✓ Elastyczny, czytelny</span>
+<span class="tag">&lt;Modal</span> <span class="attr">onClose</span>={fn}<span class="tag">&gt;</span>
+  <span class="tag">&lt;Modal.Header&gt;</span>
+    Tytuł
+  <span class="tag">&lt;/Modal.Header&gt;</span>
+  <span class="tag">&lt;Modal.Body&gt;</span>
+    <span class="tag">&lt;p&gt;</span>Treść<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/Modal.Body&gt;</span>
+  <span class="tag">&lt;Modal.Footer&gt;</span>
+    <span class="tag">&lt;button</span> <span class="attr">onClick</span>={fn}<span class="tag">&gt;</span>OK<span class="tag">&lt;/button&gt;</span>
+  <span class="tag">&lt;/Modal.Footer&gt;</span>
+<span class="tag">&lt;/Modal&gt;</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Compound Components — implementacja</div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>React</div>
+            </div>
+            <pre><code><span class="kw">const</span> ModalContext = <span class="fn">createContext</span>&lt;{ onClose: () => <span class="kw">void</span> }&gt;(<span class="kw">null</span>!);
+
+<span class="kw">function</span> <span class="fn">Modal</span>({ children, onClose }) {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ModalContext.Provider</span> <span class="attr">value</span>={{ onClose }}<span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"modal-overlay"</span> <span class="attr">onClick</span>={onClose}<span class="tag">&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"modal"</span> <span class="attr">onClick</span>={e => e.<span class="fn">stopPropagation</span>()}<span class="tag">&gt;</span>
+          {children}
+        <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/ModalContext.Provider&gt;</span>
+  );
+}
+
+<span class="kw">function</span> <span class="fn">ModalHeader</span>({ children }) {
+  <span class="kw">const</span> { onClose } = <span class="fn">useContext</span>(ModalContext);
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"modal-header"</span><span class="tag">&gt;</span>
+      {children}
+      <span class="tag">&lt;button</span> <span class="attr">onClick</span>={onClose}<span class="tag">&gt;</span>✕<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}
+
+<span class="cm">// Attach sub-komponenty do Modal</span>
+Modal.Header = ModalHeader;
+Modal.Body = ({ children }) => <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"modal-body"</span><span class="tag">&gt;</span>{children}<span class="tag">&lt;/div&gt;</span>;
+Modal.Footer = ({ children }) => <span class="tag">&lt;div</span> <span class="attr">className</span>=<span class="str">"modal-footer"</span><span class="tag">&gt;</span>{children}<span class="tag">&lt;/div&gt;</span>;</code></pre>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Kluczowe zasady architektury</div>
+          <ul class="styled">
+            <li><strong>Single Responsibility</strong> — każdy komponent robi jedną rzecz. Logika biznesowa → custom hooks, UI → komponenty.</li>
+            <li><strong>Colocate</strong> — trzymaj pliki blisko tego gdzie są używane. Nie jeden globalny folder "components".</li>
+            <li><strong>Prezentacyjne vs kontenerowe</strong> — komponenty UI nie wiedzą skąd dane. Wyżej w drzewie: fetching i logika.</li>
+            <li><strong>Feature-based struktura folderów</strong> — <span class="ic">features/users/</span>, <span class="ic">features/cart/</span> zamiast <span class="ic">components/</span>, <span class="ic">services/</span>.</li>
+            <li><strong>Barrel exports</strong> — <span class="ic">index.ts</span> w każdym module, żeby importować <span class="ic">from 'features/users'</span>.</li>
+          </ul>
+        </div>
+
+        <!-- QUIZ 9 -->
+        <div class="quiz-container">
+          <div class="quiz-label">Quiz 9.1</div>
+          <div class="quiz-question">Czym jest wzorzec Compound Components i po co go używać?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('9-1', this, false)">
+              <div class="option-letter">A</div>
+              Sposób na lazy loading wielu komponentów jednocześnie
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('9-1', this, false)">
+              <div class="option-letter">B</div>
+              Redux pattern do zarządzania złożonym stanem
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('9-1', this, true)">
+              <div class="option-letter">C</div>
+              Rodzina powiązanych komponentów współdzielących niejawny stan przez Context — daje elastyczność bez prop explosion
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('9-1', this, false)">
+              <div class="option-letter">D</div>
+              Sposób na łączenie wielu Redux reducerów
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-9-1"></div>
+        </div>
+
+        <div class="nav-buttons">
+          <button class="nav-btn prev" onclick="showPage('m8')">← Moduł 8</button>
+          <button class="nav-btn next" onclick="showPage('m10')">Moduł 10: Testy →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULE 10 -->
+    <div id="page-m10" class="module-page">
+      <div class="content">
+        <div class="module-header">
+          <div class="module-tag">Moduł 10</div>
+          <div class="module-title">Testy —<br><em>React Testing Library</em></div>
+          <div class="module-desc">Testuj zachowanie, nie implementację. RTL i Vitest to standard w 2025.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Filozofia RTL — testuj jak użytkownik</div>
+          <p>React Testing Library ma jedno motto: <em>"The more your tests resemble the way your software is used, the more confidence they can give you."</em></p>
+
+          <div class="callout info">
+            <div class="callout-icon">💡</div>
+            <div class="callout-body"><strong>Mapowanie z Angular Testing:</strong> <span class="ic">TestBed.createComponent</span> → <span class="ic">render()</span>. <span class="ic">fixture.nativeElement.querySelector</span> → <span class="ic">screen.getByRole/Text/Label</span>. <span class="ic">fixture.detectChanges()</span> → <span class="ic">fireEvent / userEvent</span>.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Priorytety selektorów (od najlepszego)</div>
+          <ul class="styled">
+            <li><strong>getByRole</strong> — semantyczne (button, heading, textbox) — <span style="color:var(--success)">zawsze preferuj</span></li>
+            <li><strong>getByLabelText</strong> — pola formularza przez label</li>
+            <li><strong>getByPlaceholderText</strong> — przez placeholder (słabszy)</li>
+            <li><strong>getByText</strong> — tekst widoczny dla użytkownika</li>
+            <li><strong>getByTestId</strong> — data-testid — <span style="color:var(--error)">tylko jako ostateczność</span></li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Przykładowy test</div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>RTL + Vitest</div>
+            </div>
+            <pre><code><span class="kw">import</span> { render, screen, waitFor } <span class="kw">from</span> <span class="str">'@testing-library/react'</span>;
+<span class="kw">import</span> userEvent <span class="kw">from</span> <span class="str">'@testing-library/user-event'</span>;
+<span class="kw">import</span> { describe, it, expect, vi } <span class="kw">from</span> <span class="str">'vitest'</span>;
+<span class="kw">import</span> { LoginForm } <span class="kw">from</span> <span class="str">'./LoginForm'</span>;
+
+<span class="fn">describe</span>(<span class="str">'LoginForm'</span>, () => {
+  <span class="fn">it</span>(<span class="str">'pokazuje błąd przy nieprawidłowym email'</span>, <span class="kw">async</span> () => {
+    <span class="kw">const</span> user = userEvent.<span class="fn">setup</span>();
+    <span class="fn">render</span>(<span class="tag">&lt;LoginForm /&gt;</span>);
+
+    <span class="cm">// Znajdź input przez role + name (label)</span>
+    <span class="kw">const</span> emailInput = screen.<span class="fn">getByRole</span>(<span class="str">'textbox'</span>, {
+      name: <span class="str">/email/i</span>
+    });
+
+    <span class="cm">// Symuluj wpisywanie (userEvent > fireEvent)</span>
+    <span class="kw">await</span> user.<span class="fn">type</span>(emailInput, <span class="str">'nieemail'</span>);
+    <span class="kw">await</span> user.<span class="fn">click</span>(screen.<span class="fn">getByRole</span>(<span class="str">'button'</span>, { name: <span class="str">/zaloguj/i</span> }));
+
+    <span class="cm">// Sprawdź czy pojawił się błąd</span>
+    <span class="kw">await</span> <span class="fn">waitFor</span>(() => {
+      <span class="fn">expect</span>(screen.<span class="fn">getByText</span>(<span class="str">/nieprawidłowy email/i</span>)).<span class="fn">toBeInTheDocument</span>();
+    });
+  });
+
+  <span class="fn">it</span>(<span class="str">'wywołuje onLogin z danymi po udanym submit'</span>, <span class="kw">async</span> () => {
+    <span class="kw">const</span> onLogin = vi.<span class="fn">fn</span>();
+    <span class="kw">const</span> user = userEvent.<span class="fn">setup</span>();
+    <span class="fn">render</span>(<span class="tag">&lt;LoginForm</span> <span class="attr">onLogin</span>={onLogin} <span class="tag">/&gt;</span>);
+
+    <span class="kw">await</span> user.<span class="fn">type</span>(screen.<span class="fn">getByRole</span>(<span class="str">'textbox'</span>, {name: <span class="str">/email/i</span>}), <span class="str">'a@b.com'</span>);
+    <span class="kw">await</span> user.<span class="fn">type</span>(screen.<span class="fn">getByLabelText</span>(<span class="str">/password/i</span>), <span class="str">'Pass1234!'</span>);
+    <span class="kw">await</span> user.<span class="fn">click</span>(screen.<span class="fn">getByRole</span>(<span class="str">'button'</span>, {name: <span class="str">/zaloguj/i</span>}));
+
+    <span class="fn">expect</span>(onLogin).<span class="fn">toHaveBeenCalledWith</span>({
+      email: <span class="str">'a@b.com'</span>,
+      password: <span class="str">'Pass1234!'</span>,
+    });
+  });
+});</code></pre>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Mockowanie — React Query i Router</div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-lang">TypeScript</div>
+              <div class="code-label"><span class="dot dot-react"></span>Test helpers</div>
+            </div>
+            <pre><code><span class="cm">// Wrapper z providerami — stwórz raz, używaj wszędzie</span>
+<span class="kw">function</span> <span class="fn">renderWithProviders</span>(ui: ReactElement) {
+  <span class="kw">const</span> queryClient = <span class="kw">new</span> <span class="fn">QueryClient</span>({
+    defaultOptions: { queries: { retry: <span class="kw">false</span> } }
+  });
+
+  <span class="kw">return</span> <span class="fn">render</span>(
+    <span class="tag">&lt;QueryClientProvider</span> <span class="attr">client</span>={queryClient}<span class="tag">&gt;</span>
+      <span class="tag">&lt;MemoryRouter&gt;</span>
+        {ui}
+      <span class="tag">&lt;/MemoryRouter&gt;</span>
+    <span class="tag">&lt;/QueryClientProvider&gt;</span>
+  );
+}
+
+<span class="cm">// Mockowanie fetcha przez MSW (Mock Service Worker)</span>
+<span class="cm">// lub vi.mock:</span>
+vi.<span class="fn">mock</span>(<span class="str">'../api/users'</span>, () => ({
+  <span class="fn">fetchUsers</span>: vi.<span class="fn">fn</span>().<span class="fn">mockResolvedValue</span>([
+    { id: <span class="str">'1'</span>, name: <span class="str">'Anna'</span> }
+  ])
+}));</code></pre>
+          </div>
+        </div>
+
+        <!-- FINAL QUIZ -->
+        <div class="quiz-container">
+          <div class="quiz-label">Quiz 10.1 — Finałowy</div>
+          <div class="quiz-question">Masz test: <code style="font-family:monospace;font-size:12px">const btn = document.querySelector('.submit-btn')</code>. Dlaczego to antypattern w RTL?</div>
+          <div class="quiz-options">
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('10-1', this, false)">
+              <div class="option-letter">A</div>
+              querySelector jest zbyt wolny w testach
+            </div>
+            <div class="quiz-option" data-correct="true" onclick="answerQuiz('10-1', this, true)">
+              <div class="option-letter">B</div>
+              Testuje implementację (className), nie zachowanie. Zmiana nazwy klasy łamie test, choć komponent działa poprawnie
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('10-1', this, false)">
+              <div class="option-letter">C</div>
+              RTL nie ma dostępu do DOM
+            </div>
+            <div class="quiz-option" data-correct="false" onclick="answerQuiz('10-1', this, false)">
+              <div class="option-letter">D</div>
+              Powinna być użyta getByTestId zamiast querySelector
+            </div>
+          </div>
+          <div class="quiz-feedback" id="feedback-10-1"></div>
+        </div>
+
+        <div class="challenge">
+          <div class="challenge-label">🎯 Zadanie finałowe</div>
+          <div class="challenge-title">Mini-aplikacja: Todo List</div>
+          <div class="challenge-desc">
+            Zbuduj kompletną aplikację Todo używając wszystkiego z kursu:<br><br>
+            • <strong>useState</strong> — lista tasków<br>
+            • <strong>React Hook Form</strong> — formularz dodawania<br>
+            • <strong>Zustand</strong> — filtrowanie (all/active/done) jako global state<br>
+            • <strong>Custom hook</strong> — useLocalStorage do persystencji<br>
+            • <strong>TypeScript</strong> — pełne typowanie<br>
+            • <strong>Testy RTL</strong> — przynajmniej 3 scenariusze
+          </div>
+          <div class="challenge-hints">
+            <button class="hint-toggle" onclick="toggleHints(this)">Pokaż podpowiedzi</button>
+            <div class="hints-content">
+              <div class="hint">Zacznij od typów: interface Todo { id: string, text: string, done: boolean }</div>
+              <div class="hint">useLocalStorage hook z Modułu 4 — gotowy blueprint</div>
+              <div class="hint">Zustand store: { filter: 'all'|'active'|'done', setFilter }</div>
+              <div class="hint">filteredTodos = useMemo(() => todos.filter(...), [todos, filter])</div>
+              <div class="hint">Testuj: dodawanie taska, oznaczanie jako done, filtrowanie</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout success">
+          <div class="callout-icon">🎉</div>
+          <div class="callout-body">
+            <strong>Ukończyłaś kurs!</strong> Teraz wiesz jak myśleć Reactowo. Następny krok: zbuduj coś własnego — rzeczy uczą się przez syntezę, nie czytanie. Powodzenia na rozmowie! 🚀
+          </div>
+        </div>
+
+        <div class="nav-buttons">
+          <button class="nav-btn prev" onclick="showPage('m9')">← Moduł 9</button>
+          <button class="nav-btn next" onclick="showPage('home')">📋 Spis treści</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const MODULES = ['home','m1','m2','m3','m4','m5','m6','m7','m8','m9','m10'];
+  const completed = new Set(JSON.parse(localStorage.getItem('react-course-completed') || '[]'));
+
+  function showPage(id) {
+    document.querySelectorAll('.module-page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + id)?.classList.add('active');
+    document.querySelector(`[data-page="${id}"]`)?.classList.add('active');
+    window.scrollTo(0, 0);
+    if (id !== 'home') markCompleted(id);
+    updateProgress();
+  }
+
+  function markCompleted(id) {
+    completed.add(id);
+    localStorage.setItem('react-course-completed', JSON.stringify([...completed]));
+    const nav = document.querySelector(`[data-page="${id}"]`);
+    if (nav && id !== 'home') nav.classList.add('completed');
+  }
+
+  function updateProgress() {
+    const modules = MODULES.slice(1);
+    const done = modules.filter(m => completed.has(m)).length;
+    const pct = Math.round((done / modules.length) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = pct + '%';
+    document.querySelectorAll('.nav-item').forEach(n => {
+      const pg = n.dataset.page;
+      if (pg && pg !== 'home' && completed.has(pg)) {
+        n.classList.add('completed');
+      }
+    });
+  }
+
+  const feedbacks = {
+    '1-1': { correct: 'Dokładnie! Custom hook (useXxx) to odpowiednik serwisu — wyciągasz logikę do reużywalnej funkcji. Zustand store pełni rolę singletona.', incorrect: 'Nie do końca. Serwis-singleton w React to custom hook lub Zustand store. DI nie istnieje w React w rozumieniu Angularowym.' },
+    '1-2': { correct: 'Tak! Luty 2019 to data przełomowa — hooks zmieniły React fundamentalnie. Przed nimi klasy, po nich funkcje.', incorrect: 'Hooki pojawiły się w React 16.8, luty 2019. Jeśli opuszczałaś React przed tą datą — to właśnie główna zmiana, którą musisz przyswoić.' },
+    '2-1': { correct: 'Dokładnie! Brak key to klasyczny błąd. React potrzebuje key do efektywnego reconciliation (diff algorytmu). Bez niego dostaniesz warning i potencjalnie błędne zachowanie przy mutacjach listy.', incorrect: 'Nie. Główny problem to brak atrybutu key={p.id} na elemencie li. React wymaga unikalnego key przy każdym elemencie listy.' },
+    '2-2': { correct: 'Zgadza się! To jedna z najczęstszych pułapek. 0 jest falsy, więc React nie renderuje komponentu Alert, ale 0 jako liczba wciąż jest renderowane do DOM. Rozwiązanie: count > 0 && <Alert /> lub !!count && <Alert />', incorrect: 'Uwaga na pułapkę! 0 jest falsy, więc Alert się nie wyrenderuje. Ale React renderuje 0 jako tekst do DOM! To częsty bug.' },
+    '3-1': { correct: 'Tak! Cleanup działa: (1) przed każdym kolejnym uruchomieniem efektu gdy deps się zmieniły, (2) przy odmontowaniu komponentu. To ważne dla subscription, timerów, event listenerów.', incorrect: 'Cleanup nie działa tylko przy unmount. Działa też przed każdym kolejnym uruchomieniem efektu. To kluczowe dla event listenerów i subscriptions.' },
+    '3-2': { correct: 'Podwójny błąd! Array.push() mutuje tablicę (React nie zobaczy zmiany) i zwraca długość tablicy (number), nie samą tablicę. Prawidłowo: setItems([...items, newItem])', incorrect: 'Tu są dwa błędy: push() mutuje oryginalną tablicę (naruszenie immutability!) i zwraca liczbę (długość), nie tablicę. setItems dostałoby number zamiast array.' },
+    '4-1': { correct: 'Dokładnie! useCallback ma sens gdy: przekazujesz callback do React.memo komponentu (stabilna referencja = brak zbędnego re-renderu child) lub gdy funkcja jest w dependency array innego hooka.', incorrect: 'useCallback nie jest za darmo — też ma koszt. Używaj go selektywnie: gdy callback idzie do memoizowanego child-komponentu lub jest w dependency array useEffect/useMemo.' },
+    '4-2': { correct: 'Tak! To kluczowa różnica. useRef = "pudełko" na wartość, zmiana .current nie triggeruje re-renderu. Dlatego świetny do timerów, DOM referencji, poprzednich wartości.', incorrect: 'Kluczowa różnica: useRef zmiana .current nie powoduje re-renderu! useState owszem. useRef może przechowywać dowolne wartości, nie tylko DOM.' },
+    '5-1': { correct: 'Dokładnie! React Hook Form używa uncontrolled inputs pod spodem — wartości żyją w DOM, nie w React state. Brak re-renderów przy pisaniu to ogromna oszczędność przy dużych formularzach.', incorrect: 'RHF jest wydajny bo używa uncontrolled inputs (refy zamiast state). DOM przechowuje wartości, React nie re-renderuje przy każdym keystroke.' },
+    '6-1': { correct: 'Poprawnie! index: true (bez path) oznacza "renderuj ten komponent gdy jesteś na ścieżce rodzica i nie pasuje żadna inna podruta". Odpowiednik { path: \'\', component: X } w Angularze.', incorrect: 'W React Router v6 index route definiujesz przez index: true (bez path). Renderuje się gdy URL = ścieżka rodzica bez dalszej podrouty.' },
+    '7-1': { correct: 'Dokładnie! Selektor izoluje reaktywność. Komponent subskrybuje tylko na userName — re-render następuje wyłącznie gdy ta konkretna wartość się zmieni. To kluczowa optymalizacja w Zustand.', incorrect: 'Selektor w Zustand izoluje reaktywność — komponent re-renderuje się tylko gdy wybrany fragment store się zmieni, nie przy każdej zmianie całego store.' },
+    '8-1': { correct: 'Tak! queryKey to jak "cache address". Zmiana userId = nowy klucz = nowe zapytanie. TanStack Query automatycznie refetchuje. Cache dla poprzedniego userId pozostaje na wypadek powrotu.', incorrect: 'queryKey to klucz cache. Zmiana userId zmienia klucz → TanStack Query automatycznie uruchamia nowe zapytanie. To jak dependency array w useEffect.' },
+    '9-1': { correct: 'Dokładnie! Compound Components to rodzina komponentów (Modal + Modal.Header + Modal.Body) które współdzielą niejawny stan przez Context. Daje elastyczność użytkownikowi bez prop explosion.', incorrect: 'Compound Components to wzorzec kompozycji: rodzina powiązanych komponentów współdzielących ukryty stan przez Context. Przykład: Select + Option, Modal + Header + Footer.' },
+    '10-1': { correct: 'Tak! Selekcja przez CSS class testuje implementację. Użytkownik nie widzi klas CSS — widzi przyciski, nagłówki, tekst. Używaj getByRole("button") — to testuje zachowanie, nie szczegóły implementacji.', incorrect: 'Antypattern: querySelector(.submit-btn) testuje implementację (class name). Prawidłowo: screen.getByRole("button", { name: /submit/i }) — testuje co widzi użytkownik.' },
+  };
+
+  function answerQuiz(id, el, isCorrect) {
+    const container = el.closest('.quiz-container');
+    if (container.dataset.answered) return;
+    container.dataset.answered = 'true';
+
+    container.querySelectorAll('.quiz-option').forEach(o => {
+      o.setAttribute('disabled', 'true');
+      if (o.dataset.correct === 'true') o.classList.add('correct');
+    });
+    if (!isCorrect) el.classList.add('incorrect');
+
+    const fb = container.querySelector('.quiz-feedback');
+    if (fb && feedbacks[id]) {
+      fb.textContent = isCorrect ? '✓ ' + feedbacks[id].correct : '✗ ' + feedbacks[id].incorrect;
+      fb.className = 'quiz-feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+    }
+  }
+
+  function toggleHints(btn) {
+    const content = btn.nextElementSibling;
+    content.classList.toggle('show');
+    btn.textContent = content.classList.contains('show') ? 'Ukryj podpowiedzi' : 'Pokaż podpowiedzi';
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>
